@@ -1,76 +1,51 @@
 import React, { useState } from 'react';
-import { FaUser, FaEnvelope, FaVenusMars, FaCamera, FaListUl } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { BASE_URL } from '../store/constant';
 import axios from 'axios';
-
 import { login } from '../store/userSlice';
-const EditProfile = ({ user}) => {
-console.log(user)
 
-   const dispatch = useDispatch();
+const EditProfile = ({ user }) => {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     gender: user?.gender || '',
     emailId: user?.emailId || '',
     description: user?.description || '',
-    photoUrl: user?.photoUrl || '',
-    skills: user?.skills || [],
+    skills: user?.skills || '', // Simplified: no need to join with commas
+    photoUrl: user?.photoUrl || '' 
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  try {
-    const response=await axios.patch(`${BASE_URL}/profile/editprofile`,
-    {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-       gender: formData.gender,
-       emailId: formData.emailId,
-       description: formData.description,
-       photoUrl: formData.photoUrl,
-       skills: formData.skills,
-    },
-      {
-        withCredentials: true
-      })
-      console.log(response.data)
-      dispatch(login(response.data.data))
+    setLoading(true);
+    setError('');
 
+    try {
+      const response = await axios.patch(
+        `${BASE_URL}/profile/editprofile`,
+        formData,
+        { withCredentials: true }
+      );
 
-  } catch (error) {
-    console.log(error)
-  }
+      dispatch(login(response.data.data));
+      setLoading(false);
+    } catch (error) {
+      setError(error.response?.data?.message || 'An error occurred while updating profile');
+      setLoading(false);
+    }
   };
-
-  const InputField = ({ icon: Icon, label, name, type = 'text', ...rest }) => (
-    <div className="relative group">
-      <input
-        id={name}
-        name={name}
-        type={type}
-        className="peer h-12 w-full border-b-2 border-gray-300 bg-transparent text-gray-200 placeholder-transparent focus:outline-none focus:border-teal-500 transition duration-300"
-        placeholder={label}
-        {...rest}
-      />
-      <label
-        htmlFor={name}
-        className="absolute left-0 -top-3.5 text-gray-400 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-4 peer-focus:text-teal-400 peer-focus:text-sm"
-      >
-        {label}
-      </label>
-      <Icon className="absolute right-3 top-3 text-gray-400 group-hover:text-teal-400 transition duration-300" />
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-teal-900 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
@@ -79,90 +54,144 @@ console.log(user)
           <h2 className="text-4xl font-bold text-teal-400">Edit Profile</h2>
           <p className="mt-2 text-sm text-gray-400">Keep your information updated</p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-6">
-            <InputField
-              icon={FaUser}
-              label="First Name"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-            />
-            <InputField
-              icon={FaUser}
-              label="Last Name"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-            />
-            <div className="relative group">
+
+        {error && (
+          <div className="bg-red-500 bg-opacity-10 border border-red-500 text-red-500 px-4 py-2 rounded">
+            {error}
+          </div>
+        )}
+
+        <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
+          <div className="space-y-6">
+            <div className="relative">
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                className="block w-full px-4 py-3 text-gray-200 bg-transparent border-b-2 border-gray-300 focus:border-teal-500 focus:outline-none transition-colors duration-300"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+              />
+              <label
+                htmlFor="firstName"
+                className="absolute left-0 -top-5 text-sm text-gray-400"
+              >
+                First Name
+              </label>
+            </div>
+            <div className="relative">
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                className="block w-full px-4 py-3 text-gray-200 bg-transparent border-b-2 border-gray-300 focus:border-teal-500 focus:outline-none transition-colors duration-300"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+              />
+              <label
+                htmlFor="lastName"
+                className="absolute left-0 -top-5 text-sm text-gray-400"
+              >
+                Last Name
+              </label>
+            </div>
+            <div className="relative">
               <select
                 id="gender"
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className="peer h-12 w-full border-b-2 border-gray-300 bg-transparent text-gray-200 focus:outline-none focus:border-teal-500 transition duration-300"
+                className="block w-full px-4 py-3 text-gray-200 bg-transparent border-b-2 border-gray-300 focus:border-teal-500 focus:outline-none transition-colors duration-300"
+                required
               >
-                <option value="" disabled hidden>Select Gender</option>
+                <option value="" disabled>Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
               <label
                 htmlFor="gender"
-                className="absolute left-0 -top-3.5 text-gray-400 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-4 peer-focus:text-teal-400 peer-focus:text-sm"
+                className="absolute left-0 -top-5 text-sm text-gray-400"
               >
                 Gender
               </label>
-              <FaVenusMars className="absolute right-3 top-3 text-gray-400 group-hover:text-teal-400 transition duration-300" />
             </div>
-            <InputField
-              icon={FaEnvelope}
-              label="Email"
-              name="emailId"
-              type="email"
-              value={formData.emailId}
-              onChange={handleChange}
-            />
-            <div className="relative group">
+            <div className="relative">
+              <input
+                id="emailId"
+                name="emailId"
+                type="email"
+                className="block w-full px-4 py-3 text-gray-200 bg-transparent border-b-2 border-gray-300 focus:border-teal-500 focus:outline-none transition-colors duration-300"
+                value={formData.emailId}
+                onChange={handleChange}
+                required
+              />
+              <label
+                htmlFor="emailId"
+                className="absolute left-0 -top-5 text-sm text-gray-400"
+              >
+                Email
+              </label>
+            </div>
+            <div className="relative">
               <textarea
                 id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows="3"
-                className="peer w-full border-b-2 border-gray-300 bg-transparent text-gray-200 placeholder-transparent focus:outline-none focus:border-teal-500 resize-none transition duration-300"
-                placeholder="Description"
-              ></textarea>
+                className="block w-full px-4 py-3 text-gray-200 bg-transparent border-b-2 border-gray-300 focus:border-teal-500 focus:outline-none transition-colors duration-300 resize-none"
+              />
               <label
                 htmlFor="description"
-                className="absolute left-0 -top-3.5 text-gray-400 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2 peer-focus:-top-4 peer-focus:text-teal-400 peer-focus:text-sm"
+                className="absolute left-0 -top-5 text-sm text-gray-400"
               >
                 Description
               </label>
             </div>
-            <InputField
-              icon={FaCamera}
-              label="Photo URL"
-              name="photoUrl"
-              value={formData.photoUrl}
-              onChange={handleChange}
-            />
-            <InputField
-              icon={FaListUl}
-              label="Skills (comma-separated)"
-              name="skills"
-              value={formData.skills}
-              onChange={handleChange}
-            />
+            <div className="relative">
+              <input
+                id="photoUrl"
+                name="photoUrl"
+                type="text"
+                className="block w-full px-4 py-3 text-gray-200 bg-transparent border-b-2 border-gray-300 focus:border-teal-500 focus:outline-none transition-colors duration-300"
+                value={formData.photoUrl}
+                onChange={handleChange}
+              />
+              <label
+                htmlFor="photoUrl"
+                className="absolute left-0 -top-5 text-sm text-gray-400"
+              >
+                Photo URL
+              </label>
+            </div>
+            <div className="relative">
+              <input
+                id="skills"
+                name="skills"
+                type="text"
+                className="block w-full px-4 py-3 text-gray-200 bg-transparent border-b-2 border-gray-300 focus:border-teal-500 focus:outline-none transition-colors duration-300"
+                value={formData.skills}
+                onChange={handleChange}
+              />
+              <label
+                htmlFor="skills"
+                className="absolute left-0 -top-5 text-sm text-gray-400"
+              >
+                Skills (comma-separated)
+              </label>
+            </div>
           </div>
 
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400 transition duration-300"
+              disabled={loading}
+              className={`w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-400 transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              Save Changes
+              {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

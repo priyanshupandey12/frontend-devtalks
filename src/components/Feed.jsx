@@ -29,14 +29,18 @@ const Feed = () => {
       setIsLoading(false);
     }
   };
+  const handleRequestHandled = () => {
+    // Fetch the remaining users or update the state without needing a full page reload
+    getfeed();
+  };
 
   useEffect(() => {
-    if (!feed) {
+    if (!feed || feed.length === 0) {
       getfeed();
     } else {
       setIsLoading(false);
     }
-  }, [feed]);
+  }, []);
 
 
 
@@ -48,7 +52,7 @@ const Feed = () => {
   return (
     <div className="flex flex-col items-center space-y-4 p-4 bg-gray-800 min-h-screen">
       {users.length > 0 ? (
-        <UserCard user={users[0]} />
+        <UserCard user={users[0]} onRequestHandled={handleRequestHandled} />
       ) : (
         <div>
           No users available

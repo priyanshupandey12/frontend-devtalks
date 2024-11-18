@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const connectionslice=createSlice({
   name:"connection",
   initialState:{
-    connections:null
+    connections:null,
+
   },
   reducers:{
     addconnections:(state,action)=>{
@@ -12,6 +13,8 @@ const connectionslice=createSlice({
      removeconnections:(state)=>{
       state.connections=null
     } 
+ 
+
     }
 });
 
