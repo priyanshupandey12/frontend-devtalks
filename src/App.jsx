@@ -9,6 +9,8 @@ import Profile from './components/Profile'
 import Connections from './components/Connections'
 import Request from './components/Request'
 import SignUp from './components/SignUp'
+import Premium from './components/Premium'
+import Chat from './components/Chat'
 
 const App = () => {
   return (
@@ -24,6 +26,8 @@ const App = () => {
           <Route path="/connections" element={<Connections />} />
           <Route path="/request" element={<Request />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/premium" element={<Premium />} />
+          <Route path="/chat/:userId" element={<Chat/>}/>
           </Route>
         </Routes>
   
