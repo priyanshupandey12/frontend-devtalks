@@ -21,12 +21,13 @@ const Body = () => {
         withCredentials:true
       })  
       dispatch(login(res.data))
-      console.log(res.data)
+    
+
     } catch (error) {
    
-        navigate('/login')
+        navigate('/')
     
-      console.log(error)
+    
       }
 
   }
@@ -37,9 +38,13 @@ const Body = () => {
 
   return (
     <div>
-      <Header/>
-      <Outlet/>
-      <Footer />
+    <div>
+    <Header />
+    <main className="pt-16 min-h-screen bg-gray-900">
+      <Outlet />
+    </main>
+    <Footer />
+  </div>
       
     </div>
   )

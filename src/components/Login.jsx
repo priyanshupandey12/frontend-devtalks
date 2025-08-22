@@ -30,9 +30,13 @@ const Login = () => {
           }
         }
       );
-      console.log('Login successful:', response.data.user);
+    
        dispatch(login(response.data.user))
-       navigate('/')
+       if(response.status==200) {
+          navigate('/feed')
+       }
+       
+    
     }
      catch (err) {
       setError(err.response?.data);
