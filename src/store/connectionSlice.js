@@ -10,6 +10,21 @@ const connectionslice=createSlice({
     addconnections:(state,action)=>{
       state.connections=action.payload
     },
+
+    updateConnectionStatus: (state, action) => {
+      const { userId, isOnline } = action.payload;
+   
+      if (state.connections && state.connections.data) {
+     
+        const userIndex = state.connections.data.findIndex(c => c._id === userId);
+
+       
+        if (userIndex !== -1) {
+          state.connections.data[userIndex].isOnline = isOnline;
+        }
+      }
+    },
+
      removeconnections:(state)=>{
       state.connections=null
     } 
@@ -18,5 +33,5 @@ const connectionslice=createSlice({
     }
 });
 
-export const {addconnections,removeconnections}=connectionslice.actions
+export const {addconnections,removeconnections,updateConnectionStatus}=connectionslice.actions
 export default connectionslice.reducer

@@ -14,7 +14,7 @@ const Premium = () => {
             withCredentials: true
           }
         );
-        console.log(response.data)
+       
         const order=response.data
         const options = {
           key: order.keyid, // Replace with your Razorpay key_id

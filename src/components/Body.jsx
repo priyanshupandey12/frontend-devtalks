@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux'
 import { login } from '../store/userSlice'
 import Header from './Header'
 import { useSelector } from 'react-redux'
-
 const Body = () => {
   const navigate=useNavigate()
   const dispatch=useDispatch();
@@ -21,10 +20,9 @@ const Body = () => {
         withCredentials:true
       })  
       dispatch(login(res.data))
-    
 
     } catch (error) {
-   
+        console.log(error)
         navigate('/')
     
     

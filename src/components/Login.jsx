@@ -32,6 +32,8 @@ const Login = () => {
       );
     
        dispatch(login(response.data.user))
+
+   
        if(response.status==200) {
           navigate('/feed')
        }
@@ -44,6 +46,8 @@ const Login = () => {
  
     }
   };
+
+
 
 
   return (

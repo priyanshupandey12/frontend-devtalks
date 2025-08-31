@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../store/constant';
 import { useDispatch, useSelector } from 'react-redux';
-import { addconnections } from '../store/connectionSlice';
+import { addconnections,updateConnectionStatus } from '../store/connectionSlice';
 import { Link } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
+import {useSocket} from './SocketContext'
 const Connections = () => {
 
   const dispatch = useDispatch();
   const connectionsData = useSelector((store) => store.connections.connections);
 
-
+   const navigate = useNavigate();
+   const currentUser = useSelector((store) => store.user);
   const [error, setError] = useState(null);
+
+   const { socket } = useSocket();
 
   useEffect(() => {
     const fetchConnections = async () => {
@@ -29,6 +33,56 @@ const Connections = () => {
     fetchConnections();
   }, [dispatch]);
 
+   const handleCallClick = (connection) => {
+    if (!currentUser || !connection) return;
+
+    
+    const ids = [currentUser._id, connection._id];
+    ids.sort();
+    const channelName = ids.join('_');
+
+   if (socket) {
+      socket.emit("outgoing_call", { 
+        to: connection._id, 
+        from: currentUser,
+        channelName 
+      });
+    } else {
+      console.error("Socket not connected. Cannot make a call.");
+      return;
+    }
+
+  
+    navigate(`/video-call/${channelName}`);
+  };
+
+
+
+useEffect(() => {
+  if (!socket) return;
+
+
+  const handleConnectionsStatus = (statusMap) => {
+
+    for (const [userId, isOnline] of Object.entries(statusMap)) {
+      dispatch(updateConnectionStatus({ userId, isOnline }));
+    }
+  };
+  socket.on('connections_status', handleConnectionsStatus);
+
+  const handleStatusUpdate = ({ userId, isOnline }) => {
+ 
+    dispatch(updateConnectionStatus({ userId, isOnline }));
+  };
+  socket.on('user_status_update', handleStatusUpdate);
+
+
+  
+  return () => {
+    socket.off('connections_status', handleConnectionsStatus);
+    socket.off('user_status_update', handleStatusUpdate);
+  };
+}, [socket, dispatch]);
  
 
   if (error) {
@@ -63,13 +117,26 @@ const Connections = () => {
       <h1 className='text-3xl font-bold text-gray-200 mb-8 text-center'>Connections</h1>
       <div className="space-y-6">
         {connections.map((connection) => (
+         
           <div key={connection._id} className="bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
             <div className="flex items-start p-6">
               <div className="flex-shrink-0">
                 <img className="w-24 h-24 rounded-full object-cover border-2 border-gray-100 hover:border-blue-400 transition-colors duration-300" src={connection.photoUrl} alt={`${connection.firstName} ${connection.lastName}`} />
               </div>
               <div className="ml-6 flex-1">
-                <h2 className="text-xl font-bold text-white mb-2">{connection.firstName} {connection.lastName}</h2>
+              
+              <div className="flex items-center space-x-3 mb-2">
+  <h2 className="text-xl font-bold text-white">{connection.firstName} {connection.lastName}</h2>
+  
+
+  <span 
+    className={`w-3 h-3 rounded-full transition-colors duration-500 ${
+      connection.isOnline ? 'bg-green-400 shadow-lg shadow-green-400/50' : 'bg-gray-500'
+    }`}
+    title={connection.isOnline ? 'Online' : 'Offline'}
+  ></span>
+</div>
+
                 <div className="mb-3">
                   {connection.skills && (
                     <span className="inline-block px-3 py-1 mr-2 mb-2 bg-blue-50 text-blue-600 text-sm rounded-full">
@@ -79,7 +146,17 @@ const Connections = () => {
                 </div>
                 <p className="text-white text-sm leading-relaxed">{connection.description}</p>
               </div>
-          <Link to={`/chat/${connection._id}`}>  <button className='px-3 py-1  bg-blue-50 text-blue-600 rounded-lg border border-cyan-200'>Chat</button></Link> 
+       <div className="flex flex-col space-y-2">
+                  <Link to={`/chat/${connection._id}`}>
+                    <button className='w-full px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition'>Chat</button>
+                  </Link>
+                <button 
+                  onClick={() => handleCallClick(connection)} 
+                  className='w-full px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition'
+                >
+                  Call
+                </button>
+                </div>
             </div>
           </div>
         ))}

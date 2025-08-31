@@ -19,12 +19,15 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+
   const handleLogout = async () => {
     try {
+   
       await axios.get(`${BASE_URL}/users/logout`, {
         withCredentials: true,
       });
       dispatch(logout());
+    
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);

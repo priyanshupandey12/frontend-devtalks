@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { createSocketConnection } from '../store/socket';
 import { useSelector } from 'react-redux';
+import { useSocket } from './SocketContext';
 import { BASE_URL } from '../store/constant';
 import axios from 'axios';
 
@@ -11,8 +11,8 @@ const Chat = () => {
   const loggedin = user ? user._id : null;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [socket, setSocket] = useState(null);
-
+  const { socket } = useSocket();  // ✅ use global socket
+  const messagesEndRef = useRef(null);
   const fetchChat = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/chats/${userId}`, {
@@ -21,9 +21,10 @@ const Chat = () => {
 
       const chatMessages = response?.data?.data.messages.map((msg) => ({
         sender: msg.senderId.firstName,
-        time: msg.createdAt,
+        time: new Date(msg.createdAt).toLocaleTimeString(),
         text: msg.text,
         senderId: msg.senderId._id,
+        id: msg._id, 
       }));
 
       setMessages(chatMessages);
@@ -34,37 +35,30 @@ const Chat = () => {
 
   useEffect(() => {
     fetchChat();
-  }, [userId]); 
+  }, [userId]);
 
   useEffect(() => {
-    if (!loggedin) return;
+    if (!socket || !loggedin) return;
 
-    const socketInstance = createSocketConnection();
-    setSocket(socketInstance);
+    socket.emit('joinchat', { loggedin, userId });
 
-    socketInstance.emit('joinchat', { loggedin, userId });
-
-    socketInstance.on('messageDelivered', ({ firstName, text, senderId }) => {
+    socket.on('messageDelivered', ({ firstName, text, senderId, _id,createdAt }) => {
+       if (senderId === loggedin) return;
       const newMessage = {
         sender: firstName,
-        time: new Date().toLocaleTimeString(),
+        time: new Date(createdAt || Date.now()).toLocaleTimeString(),
         text,
         senderId,
+        id: _id || Date.now(), // fallback id
       };
 
-
-      setMessages((prevMessages) => {
-        if (!prevMessages.some((msg) => msg.text === newMessage.text && msg.senderId === newMessage.senderId)) {
-          return [...prevMessages, newMessage];
-        }
-        return prevMessages;
-      });
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
-      socketInstance.disconnect();
+      socket.off('messageDelivered'); 
     };
-  }, [loggedin, userId]);
+  }, [socket, loggedin, userId]);
 
   const sendMessage = () => {
     if (socket && newMessage.trim()) {
@@ -75,45 +69,37 @@ const Chat = () => {
         text: newMessage,
       };
 
-     
       const newMsg = {
         sender: 'You',
         time: new Date().toLocaleTimeString(),
         text: newMessage,
         senderId: loggedin,
+        id: Date.now(),
       };
 
-  
-      setMessages((prevMessages) => {
-        if (!prevMessages.some((msg) => msg.text === newMsg.text && msg.senderId === newMsg.senderId)) {
-          return [...prevMessages, newMsg];
-        }
-        return prevMessages;
-      });
+      setMessages((prevMessages) => [...prevMessages, newMsg]);
 
-   
       socket.emit('sendmessage', messageToSend);
-
       setNewMessage('');
     }
   };
 
+    useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-gray-800 via-gray-900 to-black min-h-screen p-4">
-
       <div className="w-full max-w-md flex items-center justify-between mb-4">
         <Link to="/connections">
-          <button className="btn btn-primary text-white">
-            Back
-          </button>
+          <button className="btn btn-primary text-white">Back</button>
         </Link>
-        <img src={user?.photoUrl} alt="User " className="w-10 h-10 rounded-full" />
+        <img src={user?.photoUrl} alt="User" className="w-10 h-10 rounded-full" />
       </div>
 
- 
       <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-4 overflow-y-auto h-[65vh] space-y-4">
-        {messages.map((msg, index) => (
-          <div key={index} className={`flex ${msg.senderId === loggedin ? 'justify-end' : 'justify-start'}`}>
+        {messages.map((msg) => (
+          <div key={msg.id} className={`flex ${msg.senderId === loggedin ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`chat-bubble ${msg.senderId === loggedin ? 'bg-blue-500 text-white' : 'bg-green-500 text-white'} p-3 rounded-lg max-w-xs shadow-md`}
             >
@@ -122,8 +108,8 @@ const Chat = () => {
             </div>
           </div>
         ))}
+          <div ref={messagesEndRef} />
       </div>
-
 
       <div className="mt-4 flex items-center w-full max-w-md space-x-2">
         <input
@@ -133,10 +119,7 @@ const Chat = () => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <button
-          className="btn btn-primary text-white px-6 py-2 rounded-full"
-          onClick={sendMessage}
-        >
+        <button className="btn btn-primary text-white px-6 py-2 rounded-full" onClick={sendMessage}>
           Send
         </button>
       </div>

@@ -64,7 +64,7 @@ const Feed = () => {
         withCredentials: true
       });
       
-      console.log('Feed response:', res.data);
+   
     
       dispatch(addfeed(res?.data));
     } catch (error) {
@@ -131,7 +131,7 @@ const Feed = () => {
   );
 
   const users = feed && feed.users && Array.isArray(feed.users) ? feed.users : [];
-  console.log('Feed data from store:', users);
+
   return (
 
     <div className="min-h-screen bg-gray-800">

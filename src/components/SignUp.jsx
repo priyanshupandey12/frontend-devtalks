@@ -40,7 +40,7 @@ const SignUp = () => {
        withCredentials: true
      })
     dispatch(login(response.data.data))
-     console.log(response.data.data)
+     .log(response.data.data)
    
        navigate('/login')
    
