@@ -17,7 +17,6 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
 
     if (user) {
-   
       const newSocket = io(SOCKET_URL, {
         withCredentials: true,
       });

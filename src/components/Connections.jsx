@@ -129,12 +129,7 @@ useEffect(() => {
   <h2 className="text-xl font-bold text-white">{connection.firstName} {connection.lastName}</h2>
   
 
-  <span 
-    className={`w-3 h-3 rounded-full transition-colors duration-500 ${
-      connection.isOnline ? 'bg-green-400 shadow-lg shadow-green-400/50' : 'bg-gray-500'
-    }`}
-    title={connection.isOnline ? 'Online' : 'Offline'}
-  ></span>
+
 </div>
 
                 <div className="mb-3">
