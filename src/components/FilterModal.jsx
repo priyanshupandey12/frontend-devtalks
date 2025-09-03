@@ -6,7 +6,7 @@ const FilterModal = ({ filters, onApply, onClose }) => {
   const [skillInput, setSkillInput] = useState('');
 
  
-  const experienceLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+  const experienceLevels = ['Student', 'Beginner', 'Intermediate', 'Senior'];
   const primaryGoals = ['Learning', 'Building Projects', 'Hackathon', 'Networking', 'Job Search'];
   const hoursPerWeekOptions = ['1-5 hours', '5-10 hours', '10-15 hours', '15-20 hours', '20+ hours'];
   const activeWindowOptions = [

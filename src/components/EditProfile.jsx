@@ -14,10 +14,10 @@ const EditProfile = ({ user, onCancel }) => {
     lastName: user?.lastName || '',
     gender: user?.gender || '',
     description: user?.description || '',
-    skills: user?.skills || '',
+    skills: Array.isArray(user?.skills) ? user.skills.join(", ") : '',
     photoUrl: user?.photoUrl || '',
     location: user?.location?.address || '',
-    commitment: user?.commitment || '',
+    commitment: user?.commitment || { hoursPerWeek: "", projectDuration: "" },
     primaryGoal: user?.primaryGoal || '',
     userRole: user?.userRole || '',
     links: {
@@ -53,10 +53,17 @@ const EditProfile = ({ user, onCancel }) => {
     setError('');
 
     try {
-      const payload = {
+ const payload = {
       ...formData,
+      skills: formData.skills
+        ? formData.skills.split(",").map(skill => skill.trim())
+        : [],
+      commitment: {
+        hoursPerWeek: formData.commitment?.hoursPerWeek || "",
+        projectDuration: formData.commitment?.projectDuration || ""
+      },
       location: {
-        type: 'Point',
+        type: "Point",
         coordinates: user?.location?.coordinates || [0, 0],
         address: formData.location
       }
@@ -206,10 +213,10 @@ const EditProfile = ({ user, onCancel }) => {
                   required
                   className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                 </select>
               </div>
 
@@ -239,33 +246,49 @@ const EditProfile = ({ user, onCancel }) => {
                   onChange={handleChange}
                   className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
-                  <option value="">Select Role</option>
-                  <option value="developer">Developer</option>
-                  <option value="designer">Designer</option>
-                  <option value="manager">Manager</option>
-                  <option value="analyst">Analyst</option>
-                  <option value="other">Other</option>
+                 <option value="">Select Role</option>
+                 <option value="Developer">Developer</option>
+                 <option value="Designer">Designer</option>
+                 <option value="Project Owner">Project Owner</option>
+                 <option value="Looking to Join">Looking to Join</option>
+                 
                 </select>
               </div>
 
               {/* Commitment Level */}
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Commitment Level
-                </label>
-                <select
-                  name="commitment"
-                  value={formData.commitment}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                >
-                  <option value="">Select Commitment</option>
-                  <option value="part-time">Part Time</option>
-                  <option value="full-time">Full Time</option>
-                  <option value="flexible">Flexible</option>
-                  <option value="occasional">Occasional</option>
-                </select>
-              </div>
+  <label className="block text-sm font-medium text-slate-300 mb-2">
+    Commitment Level
+  </label>
+  <div className="grid grid-cols-2 gap-4">
+    <input
+      type="text"
+      name="hoursPerWeek"
+      placeholder="Hours per week"
+      value={formData.commitment.hoursPerWeek || ""}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          commitment: { ...formData.commitment, hoursPerWeek: e.target.value },
+        })
+      }
+      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+    />
+    <input
+      type="text"
+      name="projectDuration"
+      placeholder="Project duration"
+      value={formData.commitment.projectDuration || ""}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          commitment: { ...formData.commitment, projectDuration: e.target.value },
+        })
+      }
+      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+    />
+  </div>
+</div>
 
               {/* Skills */}
               <div className="md:col-span-2 lg:col-span-3">

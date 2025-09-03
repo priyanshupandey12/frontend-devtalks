@@ -7,7 +7,7 @@ const Profile = () => {
   const user = useSelector((store) => store.user);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Loading or no user state
+
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
@@ -16,17 +16,16 @@ const Profile = () => {
     );
   }
 
-  // Edit mode - shows EditProfile component
+
   if (isEditing) {
     return <EditProfile user={user} onCancel={() => setIsEditing(false)} />;
   }
 
-  // Default view mode - shows ProfileView with floating edit button
+
   return (
     <div className="relative">
       <ProfileView user={user} />
       
-      {/* Floating Edit Button - This appears in bottom-right corner */}
       <button
         onClick={() => setIsEditing(true)}
         className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-medium shadow-lg transition-all duration-200 flex items-center gap-2 z-50 hover:scale-105"

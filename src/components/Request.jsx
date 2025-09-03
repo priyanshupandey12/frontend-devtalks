@@ -7,21 +7,21 @@ import { addrequest, removerequest } from '../store/requestSlice';
 const Request = () => {
   const dispatch = useDispatch();
   const requests = useSelector((store) => store.request.request);
-  console.log(requests);
+  
 
   const reviewRequest = async (status, _id) => {
     try {
-      // Send the request review to the server
+    
       const res = await axios.post(
         `${BASE_URL}/connection/request/review/${status}/${_id}`,
         {},
         { withCredentials: true }
       );
 
-      // Dispatch the action to remove the request from the Redux state
+    
       dispatch(removerequest(_id));
 
-      // Optionally, fetch the updated list of requests after the review
+   
       fetchrequest();
     } catch (error) {
       console.log(error);
@@ -33,7 +33,7 @@ const Request = () => {
       const res = await axios.get(`${BASE_URL}/pending/viewrequest`, {
         withCredentials: true,
       });
-      dispatch(addrequest(res.data)); // Update the Redux state with the new data
+      dispatch(addrequest(res.data)); 
     } catch (error) {
       console.log(error);
     }
@@ -41,7 +41,7 @@ const Request = () => {
 
   useEffect(() => {
     fetchrequest();
-  }, [requests]);
+  }, []);
 
   if (!requests || !requests.data || requests.data.length === 0) {
     return (
@@ -55,7 +55,7 @@ const Request = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">User Requests</h1>
       <div className="bg-gray-800 shadow-md rounded-lg p-6">
-        {/* Map through all requests and display them */}
+    
         {requests.data.map((request) => (
           <div key={request._id} className="mb-4">
             <div className="flex items-center justify-between mb-4 mx-2">

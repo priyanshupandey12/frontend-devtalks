@@ -9,6 +9,7 @@ import { Filter, X } from 'lucide-react';
 const Feed = () => {
   const dispatch = useDispatch();
   const feed = useSelector((store) => store.feed.feed);
+ 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
    const [showFilters, setShowFilters] = useState(false);

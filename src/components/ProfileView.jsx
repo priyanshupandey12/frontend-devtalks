@@ -76,15 +76,25 @@ const ProfileView = ({ user }) => {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1">Commitment Level</label>
-                    <p className="text-white capitalize">
-                      {user?.commitment ? 
-                        (typeof user.commitment === 'string' ? 
-                          user.commitment : 
-                          `${user.commitment.hoursPerWeek || 'N/A'} hrs/week, ${user.commitment.projectDuration || 'N/A'} duration`
-                        ) : 
-                        'Not provided'
-                      }
-                    </p>
+                <p className="text-white capitalize">
+    {user?.commitment
+      ? (() => {
+          if (typeof user.commitment === "string") {
+            return user.commitment;
+          } else {
+            const hours = user.commitment.hoursPerWeek?.trim()
+              ? `${user.commitment.hoursPerWeek} hrs/week`
+              : "N/A hrs/week";
+
+            const duration = user.commitment.projectDuration?.trim()
+              ? `${user.commitment.projectDuration} duration`
+              : "N/A duration";
+
+            return `${hours}, ${duration}`;
+          }
+        })()
+      : "Not provided"}
+  </p>
                   </div>
                 </div>
               </div>
@@ -96,7 +106,11 @@ const ProfileView = ({ user }) => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1">Skills</label>
-                    <p className="text-white">{user?.skills || 'No skills listed'}</p>
+                     <p className="text-white">
+                              {Array.isArray(user?.skills) && user.skills.length > 0
+                                       ? user.skills.join(", ")
+                                        : "No skills listed"}
+                                         </p>
                   </div>
 
                   <div>
