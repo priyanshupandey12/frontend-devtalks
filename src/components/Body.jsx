@@ -38,7 +38,7 @@ const Body = () => {
     <div>
     <div>
     <Header />
-    <main className="pt-16 min-h-screen bg-gray-900">
+    <main className="pt-16 min-h-screen ">
       <Outlet />
     </main>
     <Footer />

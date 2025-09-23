@@ -62,11 +62,7 @@ const EditProfile = ({ user, onCancel }) => {
         hoursPerWeek: formData.commitment?.hoursPerWeek || "",
         projectDuration: formData.commitment?.projectDuration || ""
       },
-      location: {
-        type: "Point",
-        coordinates: user?.location?.coordinates || [0, 0],
-        address: formData.location
-      }
+     location: formData.location
     };
 
       const response = await axios.patch(
@@ -307,17 +303,27 @@ const EditProfile = ({ user, onCancel }) => {
 
               {/* Primary Goal */}
               <div className="md:col-span-2 lg:col-span-3">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Primary Goal
                 </label>
-                <input
-                  type="text"
-                  name="primaryGoal"
-                  value={formData.primaryGoal}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-                  placeholder="Hackathon"
-                />
+                     <select
+  name="primaryGoal"
+  value={formData.primaryGoal}
+  onChange={handleChange}
+  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+>
+  <option value="">Select a Goal</option>
+
+  <option value="Build a Startup">Build a Startup</option>
+  <option value="Portfolio Project">Portfolio Project</option>
+  <option value="Learn a New Skill">Learn a New Skill</option>
+  <option value="Hackathon">Hackathon</option>
+  <option value="Just for Fun">Just for Fun</option>
+  <option value="Learning">Learning</option>
+  <option value="Building Projects">Building Projects</option>
+  <option value="Networking">Networking</option>
+  <option value="Job Search">Job Search</option>
+                     </select>
               </div>
 
               {/* Description */}
