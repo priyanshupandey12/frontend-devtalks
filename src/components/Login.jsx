@@ -45,13 +45,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-gray-900">
    
-      <div className="flex-1 flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
+      <div className="flex-1 flex items-center justify-center bg-gray-900 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Get Started Now</h2>
-            <p className="text-gray-600">Enter your credentials to access your account</p>
+            <h2 className="text-3xl font-bold text-white-900 mb-2">Get Started Now</h2>
+            <p className="text-white-600">Enter your credentials to access your account</p>
           </div>
 
        
@@ -64,7 +64,7 @@ const Login = () => {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-50 text-gray-500">OR</span>
+              <span className="px-2 bg-gray-300 text-black">OR</span>
             </div>
           </div>
 
@@ -140,7 +140,7 @@ const Login = () => {
       </div>
 
     
-      <div className="flex-1 bg-gradient-to-br from-purple-100 via-pink-50 to-blue-50 flex items-center justify-center p-8">
+      <div className="flex-1  items-center justify-center p-8">
      <img 
   src="/devtalks.png" 
   alt="Login illustration" 
