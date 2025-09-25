@@ -5,10 +5,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addfeed } from '../store/feedSlice';
 import FilterModal from './FilterModal';
 import UserCard from './UserCard';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, Sparkles, Users, Target, Search, RefreshCw, AlertCircle } from 'lucide-react';
 const Feed = () => {
   const dispatch = useDispatch();
   const feed = useSelector((store) => store.feed.feed);
+  console.log(feed)
  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -118,55 +119,125 @@ const Feed = () => {
   }, []);
 
 
-
-  if (isLoading) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-800">
-      <div className="text-white text-xl">Loading...</div>
+if (isLoading) return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950">
+     
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+      </div>
+      
+      <div className="relative text-center space-y-8 p-8">
+        <div className="relative">
+        
+          <div className="w-24 h-24 border-4 border-transparent border-t-cyan-400 border-r-blue-400 rounded-full animate-spin shadow-lg"></div>
+          <div className="absolute inset-0 w-24 h-24 border-4 border-transparent border-b-purple-400 border-l-pink-400 rounded-full animate-spin animation-delay-150"></div>
+          <div className="absolute inset-2 w-20 h-20 border-2 border-transparent border-t-white/20 rounded-full animate-spin animation-delay-300"></div>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="text-3xl font-bold bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 bg-clip-text text-transparent animate-pulse">
+            Discovering Amazing Talent
+          </div>
+          <div className="text-lg text-slate-400 font-medium">
+            Connecting you with the perfect collaborators
+          </div>
+          
+       
+          <div className="flex items-center justify-center space-x-2 pt-4">
+            <div className="w-3 h-3 bg-cyan-400 rounded-full animate-bounce shadow-lg shadow-cyan-400/50"></div>
+            <div className="w-3 h-3 bg-blue-400 rounded-full animate-bounce animation-delay-200 shadow-lg shadow-blue-400/50"></div>
+            <div className="w-3 h-3 bg-purple-400 rounded-full animate-bounce animation-delay-400 shadow-lg shadow-purple-400/50"></div>
+          </div>
+        </div>
+      </div>
     </div>
   );
   
   if (error) return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-800">
-      <div className="text-red-400 text-xl">Error: {error}</div>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-red-950/20 to-slate-950 p-4">
+      <div className="text-center max-w-lg relative">
+     
+        <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-pink-500/5 to-orange-500/5 rounded-3xl blur-xl"></div>
+        
+        <div className="relative bg-gradient-to-br from-slate-900/90 via-red-950/10 to-slate-900/90 backdrop-blur-xl border border-red-500/20 rounded-3xl p-10 shadow-2xl">
+          <div className="mb-6">
+            <div className="inline-flex p-4 bg-red-500/10 rounded-full mb-4">
+              <AlertCircle className="w-12 h-12 text-red-400" />
+            </div>
+            <h2 className="text-3xl font-bold text-red-400 mb-3">Connection Lost</h2>
+            <p className="text-slate-300 text-lg leading-relaxed mb-8">{error}</p>
+          </div>
+          
+          <button 
+            onClick={() => window.location.reload()}
+            className="group px-8 py-4 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-500 hover:to-pink-500 text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-red-500/25 flex items-center space-x-2 mx-auto"
+          >
+            <RefreshCw className="w-5 h-5 group-hover:animate-spin" />
+            <span>Reconnect</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 
   const users = feed && feed.users && Array.isArray(feed.users) ? feed.users : [];
 
-  return (
+   return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900">
 
-    <div className="min-h-screen bg-gray-800">
    
-      <div className="sticky top-0 z-10 bg-gray-800 border-b border-gray-700 p-4">
-        <div className="flex items-center justify-between max-w-md mx-auto">
-          <h1 className="text-2xl font-bold text-white">Discover</h1>
-          <div className="flex items-center space-x-2">
-            {hasActiveFilters && (
+      <div className="sticky top-0 z-20 backdrop-blur-xl bg-gray-800/70 border-b border-slate-700  ">
+    
+       
+
+        <div className="relative p-6 ">
+          <div className="flex items-center justify-between max-w-md mx-auto">
+            
+            <div className="flex items-center space-x-3">
+              <div className="relative ">
+               
+                <div className="relative bg-cyan-500 p-2 rounded-full">
+                  <Sparkles className="w-5 h-5 text-white animate-pulse" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
+              </div>
+
+              <div className="space-y-0">
+                <h1 className="text-2xl font-bold text-white">
+                  Discover
+                </h1>
+                <p className="text-xs text-gray-400 font-medium tracking-wide">
+                  Connect • Collaborate • Create
+                </p>
+              </div>
+            </div>
+
+         
+            <div className="flex items-center space-x-2">
+              {hasActiveFilters && (
+                <button
+                  onClick={handleClearFilters}
+                  className="p-2 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
+                  title="Clear filters"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              )}
               <button
-                onClick={handleClearFilters}
-                className="p-2 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
-                title="Clear filters"
+                onClick={() => setShowFilters(true)}
+                className={`p-2 rounded-full transition-colors ${
+                  hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'
+                }`}
               >
-                <X className="w-5 h-5 text-white" />
+                <Filter className="w-5 h-5 text-white" />
               </button>
-            )}
-            <button
-              onClick={() => setShowFilters(true)}
-              className={`p-2 rounded-full transition-colors ${
-                hasActiveFilters 
-                  ? 'bg-blue-600 hover:bg-blue-700' 
-                  : 'bg-gray-600 hover:bg-gray-700'
-              }`}
-            >
-              <Filter className="w-5 h-5 text-white" />
-            </button>
+            </div>
           </div>
-        </div>
-        
+
       
-        {hasActiveFilters && (
-          <div className="max-w-md mx-auto mt-3">
-            <div className="flex flex-wrap gap-2 text-xs">
+          {hasActiveFilters && (
+            <div className="max-w-md mx-auto mt-3 flex flex-wrap gap-2 text-xs">
               {filters.skills.length > 0 && (
                 <span className="px-2 py-1 bg-blue-600 text-white rounded-full">
                   Skills: {filters.skills.length}
@@ -188,12 +259,12 @@ const Feed = () => {
                 </span>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-
-      <div className="flex flex-col items-center space-y-4 p-4">
+      
+      <div className="flex flex-col items-center space-y-8 p-4 mt-8">
         {users.length > 0 ? (
           <UserCard user={users[0]} onRequestHandled={handleRequestHandled} />
         ) : (
@@ -201,8 +272,8 @@ const Feed = () => {
             <div className="text-6xl mb-4">🔍</div>
             <h2 className="text-2xl font-semibold mb-2">No users found</h2>
             <p className="text-gray-400 mb-4">
-              {hasActiveFilters 
-                ? "Try adjusting your filters to find more matches" 
+              {hasActiveFilters
+                ? "Try adjusting your filters to find more matches"
                 : "Check back later for new profiles"}
             </p>
             {hasActiveFilters && (
@@ -217,7 +288,6 @@ const Feed = () => {
         )}
       </div>
 
-    
       {showFilters && (
         <FilterModal
           filters={filters}

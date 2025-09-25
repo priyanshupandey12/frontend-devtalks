@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Filter, ChevronDown } from 'lucide-react';
 
 const FilterModal = ({ filters, onApply, onClose }) => {
   const [localFilters, setLocalFilters] = useState(filters);
-  const [skillInput, setSkillInput] = useState('');
+  const [openDropdowns, setOpenDropdowns] = useState({});
 
- 
   const experienceLevels = ['Student', 'Beginner', 'Intermediate', 'Senior'];
   const primaryGoals = ['Learning', 'Building Projects', 'Hackathon', 'Networking', 'Job Search'];
   const hoursPerWeekOptions = ['1-5 hours', '5-10 hours', '10-15 hours', '15-20 hours', '20+ hours'];
@@ -13,25 +12,16 @@ const FilterModal = ({ filters, onApply, onClose }) => {
     { value: '7d', label: 'Active in last 7 days' },
     { value: '3m', label: 'Active in last 3 months' }
   ];
+  const skillOptions = ['React', 'JavaScript', 'Python', 'Node.js', 'Java', 'TypeScript', 'Flutter', 'Angular', 'MongoDB', 'PostgreSQL'];
 
-  const handleAddSkill = () => {
-    if (skillInput.trim() && !localFilters.skills.includes(skillInput.trim())) {
-      setLocalFilters(prev => ({
-        ...prev,
-        skills: [...prev.skills, skillInput.trim()]
-      }));
-      setSkillInput('');
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove) => {
-    setLocalFilters(prev => ({
+  const toggleDropdown = (dropdown) => {
+    setOpenDropdowns(prev => ({
       ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
+      [dropdown]: !prev[dropdown]
     }));
   };
 
-  const handleToggleOption = (filterType, option) => {
+  const handleMultiSelect = (filterType, option) => {
     setLocalFilters(prev => ({
       ...prev,
       [filterType]: prev[filterType].includes(option)
@@ -74,177 +64,98 @@ const FilterModal = ({ filters, onApply, onClose }) => {
     });
   };
 
+  const DropdownSection = ({ title, options, filterKey, isMultiSelect = false, placeholder = "All" }) => {
+    const isOpen = openDropdowns[filterKey];
+    const selectedValues = isMultiSelect ? localFilters[filterKey] : [localFilters[filterKey]];
+    const displayText = selectedValues.length > 0 && selectedValues[0] 
+      ? (isMultiSelect && selectedValues.length > 1 ? `${selectedValues.length} selected` : selectedValues[0])
+      : placeholder;
+
+    return (
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          {title}
+        </label>
+        <div className="relative">
+          <button
+            onClick={() => toggleDropdown(filterKey)}
+            className="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded-md flex items-center justify-between hover:bg-gray-600 transition-colors"
+          >
+            <span className="text-sm">{displayText}</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {isOpen && (
+            <div className="absolute top-full left-0 right-0 bg-gray-700 border border-gray-600 rounded-md mt-1 z-10 max-h-48 overflow-y-auto">
+              {!isMultiSelect && (
+                <button
+                  onClick={() => {
+                    handleSingleSelect(filterKey, '');
+                    toggleDropdown(filterKey);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-white hover:bg-gray-600 transition-colors"
+                >
+                  {placeholder}
+                </button>
+              )}
+              {options.map((option) => {
+                const optionValue = typeof option === 'object' ? option.value : option;
+                const optionLabel = typeof option === 'object' ? option.label : option;
+                const isSelected = selectedValues.includes(optionValue);
+                
+                return (
+                  <button
+                    key={optionValue}
+                    onClick={() => {
+                      if (isMultiSelect) {
+                        handleMultiSelect(filterKey, optionValue);
+                      } else {
+                        handleSingleSelect(filterKey, optionValue);
+                        toggleDropdown(filterKey);
+                      }
+                    }}
+                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                      isSelected 
+                        ? 'bg-teal-600 text-white' 
+                        : 'text-white hover:bg-gray-600'
+                    }`}
+                  >
+                    {optionLabel}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="sticky top-0 bg-white border-b p-4 rounded-t-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex z-50">
+    
+      <div className="w-80 bg-gray-800 h-full overflow-y-auto">
+     
+        <div className="p-4 border-b border-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">Filter Users</h2>
+            <div className="flex items-center gap-2">
+              <Filter className="w-5 h-5 text-white" />
+              <h2 className="text-lg font-semibold text-white">Advanced Filters</h2>
+            </div>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-full"
+              className="p-1 hover:bg-gray-700 rounded-full text-gray-300 hover:text-white transition-colors"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="p-4 space-y-6">
-          {/* Skills Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Skills
-            </label>
-            <div className="flex gap-2 mb-3">
-              <input
-                type="text"
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
-                placeholder="Add a skill..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                onClick={handleAddSkill}
-                disabled={!skillInput.trim()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            </div>
-            {localFilters.skills.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {localFilters.skills.map((skill, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                  >
-                    <span>{skill}</span>
-                    <button
-                      onClick={() => handleRemoveSkill(skill)}
-                      className="hover:bg-blue-200 rounded-full p-1"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-         
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Experience Level
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {experienceLevels.map((level) => (
-                <button
-                  key={level}
-                  onClick={() => handleToggleOption('experienceLevel', level)}
-                  className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                    localFilters.experienceLevel.includes(level)
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {level}
-                </button>
-              ))}
-            </div>
-          </div>
-
-         
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Primary Goal
-            </label>
-            <div className="space-y-2">
-              {primaryGoals.map((goal) => (
-                <button
-                  key={goal}
-                  onClick={() => handleToggleOption('primaryGoal', goal)}
-                  className={`w-full px-3 py-2 text-sm rounded-lg border transition-colors ${
-                    localFilters.primaryGoal.includes(goal)
-                      ? 'bg-green-600 text-white border-green-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {goal}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* GitHub Activity */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              GitHub Activity
-            </label>
-            <div className="space-y-2">
-              <button
-                onClick={() => handleSingleSelect('activeWindow', '')}
-                className={`w-full px-3 py-2 text-sm rounded-lg border transition-colors ${
-                  !localFilters.activeWindow
-                    ? 'bg-gray-600 text-white border-gray-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                Any Activity
-              </button>
-              {activeWindowOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleSingleSelect('activeWindow', option.value)}
-                  className={`w-full px-3 py-2 text-sm rounded-lg border transition-colors ${
-                    localFilters.activeWindow === option.value
-                      ? 'bg-purple-600 text-white border-purple-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Hours per Week */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Hours per Week
-            </label>
-            <div className="space-y-2">
-              <button
-                onClick={() => handleSingleSelect('hoursPerWeek', '')}
-                className={`w-full px-3 py-2 text-sm rounded-lg border transition-colors ${
-                  !localFilters.hoursPerWeek
-                    ? 'bg-gray-600 text-white border-gray-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                Any Hours
-              </button>
-              {hoursPerWeekOptions.map((hours) => (
-                <button
-                  key={hours}
-                  onClick={() => handleSingleSelect('hoursPerWeek', hours)}
-                  className={`w-full px-3 py-2 text-sm rounded-lg border transition-colors ${
-                    localFilters.hoursPerWeek === hours
-                      ? 'bg-orange-600 text-white border-orange-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {hours}
-                </button>
-              ))}
-            </div>
-          </div>
-
+        <div className="p-4 space-y-4">
      
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Location Radius (km)
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Location
             </label>
             <input
               type="number"
@@ -253,29 +164,80 @@ const FilterModal = ({ filters, onApply, onClose }) => {
               placeholder="Enter radius in km"
               min="1"
               max="1000"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent placeholder-gray-400"
             />
           </div>
+
+        
+          <DropdownSection
+            title="Experience Level"
+            options={experienceLevels}
+            filterKey="experienceLevel"
+            isMultiSelect={true}
+            placeholder="All Levels"
+          />
+
+    
+          <DropdownSection
+            title="Skills"
+            options={skillOptions}
+            filterKey="skills"
+            isMultiSelect={true}
+            placeholder="All Skills"
+          />
+
+        
+          <DropdownSection
+            title="GitHub Activity (Last 7 Days)"
+            options={activeWindowOptions}
+            filterKey="activeWindow"
+            placeholder="Any Activity"
+          />
+
+        
+          <DropdownSection
+            title="Primary Goal"
+            options={primaryGoals}
+            filterKey="primaryGoal"
+            isMultiSelect={true}
+            placeholder="Any Goal"
+          />
+
+       
+          <DropdownSection
+            title="Hours per Week"
+            options={hoursPerWeekOptions}
+            filterKey="hoursPerWeek"
+            placeholder="Any Hours"
+          />
         </div>
 
-        {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t p-4 rounded-b-2xl">
-          <div className="flex gap-3">
-            <button
-              onClick={handleClear}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              Clear All
-            </button>
+   
+        <div className="p-4 border-t border-gray-700 mt-auto">
+          <div className="space-y-2">
             <button
               onClick={handleApply}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="w-full bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2"
             >
+              <Filter className="w-4 h-4" />
               Apply Filters
+            </button>
+            <button
+              onClick={handleClear}
+              className="w-full bg-transparent border border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2"
+            >
+              <X className="w-4 h-4" />
+              Clear All
             </button>
           </div>
         </div>
       </div>
+
+    
+      <div 
+        className="flex-1 bg-black bg-opacity-20"
+        onClick={onClose}
+      />
     </div>
   );
 };
