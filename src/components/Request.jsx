@@ -3,16 +3,18 @@ import axios from 'axios';
 import { BASE_URL } from '../store/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { addrequest, removerequest } from '../store/requestSlice';
+import api from '../store/axios';
 
 const Request = () => {
   const dispatch = useDispatch();
   const requests = useSelector((store) => store.request.request);
+  console.log(requests)
   
 
   const reviewRequest = async (status, _id) => {
     try {
     
-      const res = await axios.post(
+      const res = await api.post(
         `${BASE_URL}/connection/request/review/${status}/${_id}`,
         {},
         { withCredentials: true }
@@ -30,7 +32,7 @@ const Request = () => {
 
   const fetchrequest = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/pending/viewrequest`, {
+      const res = await api.get(`${BASE_URL}/pending/viewrequest`, {
         withCredentials: true,
       });
       dispatch(addrequest(res.data)); 
@@ -60,7 +62,7 @@ const Request = () => {
           <div key={request._id} className="mb-4">
             <div className="flex items-center justify-between mb-4 mx-2">
               <img
-                src={request.fromuserId.photoUrl}
+                src={request.fromuserId?.photoUrl}
                 alt={request.fromuserId.firstName}
                 className="w-14 h-14 rounded-full"
               />

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import ProfileView from './ProfileView';
 
 const Profile = () => {
-  const user = useSelector((store) => store.user);
+  const {user }= useSelector((store) => store.user);
   const [isEditing, setIsEditing] = useState(false);
 
 

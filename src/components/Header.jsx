@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../store/constant";
 import { logout } from "../store/userSlice";
+import api from "../store/axios";
 import {
   Users,
   User,
@@ -15,7 +16,8 @@ import {
 } from "lucide-react";
 
 const Header = () => {
-  const user = useSelector((store) => store.user);
+  const user = useSelector((store) => store.user.user);
+ 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,7 +25,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
    
-      await axios.get(`${BASE_URL}/users/logout`, {
+      await api.get(`${BASE_URL}/users/logout`, {
         withCredentials: true,
       });
       dispatch(logout());

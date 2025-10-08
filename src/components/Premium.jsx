@@ -1,12 +1,13 @@
 import React from 'react'
 import {BASE_URL} from '../store/constant'
 import axios from 'axios'
+import api from '../store/axios'
 
 const Premium = () => {
    
   const HandleClick=async(type)=>{
        try {
-        const response=await axios.post(`${BASE_URL}/payment/create`,
+        const response=await api.post(`${BASE_URL}/payment/create`,
           {
             membershipType: type
           },

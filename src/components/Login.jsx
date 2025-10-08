@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
+import api from '../store/axios';
 import { useDispatch } from 'react-redux';
 import { login } from '../store/userSlice';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +20,7 @@ const Login = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post(`${BASE_URL}/users/login`,
+      const response = await api.post(`${BASE_URL}/users/login`,
         {
           emailId,
           password      
@@ -32,7 +33,7 @@ const Login = () => {
         }
       );
     
-       dispatch(login(response.data.user))
+       dispatch(login({ user: response.data.user, token: response.data.accessToken }));
    
        if(response.status==200) {
           navigate('/feed')
@@ -45,13 +46,13 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-900">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gray-900">
    
       <div className="flex-1 flex items-center justify-center bg-gray-900 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="text-3xl font-bold text-white-900 mb-2">Get Started Now</h2>
-            <p className="text-white-600">Enter your credentials to access your account</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">Get Started Now</h2>
+            <p className="text-white-400">Enter your credentials to access your account</p>
           </div>
 
        
@@ -64,7 +65,7 @@ const Login = () => {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gray-300 text-black">OR</span>
+              <span className="px-2 bg-gray-900 text-white">OR</span>
             </div>
           </div>
 
@@ -79,7 +80,7 @@ const Login = () => {
                   id="email"
                   value={emailId}
                   onChange={(e) => setemailId(e.target.value)}
-                  className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                   className="w-full px-4 py-2 pl-10 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="Enter your Email address"
                 />
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -91,7 +92,7 @@ const Login = () => {
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <a href="#" className="text-sm text-purple-600 hover:text-purple-500">
+                <a href="#" className="text-sm text-purple-500 hover:text-purple-400">
                   Forgot Password?
                 </a>
               </div>
@@ -101,7 +102,7 @@ const Login = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 w-full px-4 py-2 pl-10 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                   className="mt-1 w-full px-4 py-2 pl-10 pr-10 border border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   placeholder="Enter your Password"
                 />
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -122,16 +123,16 @@ const Login = () => {
             <button
               type="button"
               onClick={handlelogin}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-900 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300 ease-in-out"
+               className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-900 hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-300 ease-in-out"
             >
               Login
             </button>
           </div>
 
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-400">
               Don't have an account?{' '}
-              <a href="/signup" className="font-medium text-purple-600 hover:text-purple-500">
+              <a href="/signup" className="font-medium text-purple-500 hover:text-purple-400">
                 Sign up
               </a>
             </p>
@@ -144,7 +145,7 @@ const Login = () => {
      <img 
   src="/devtalks.png" 
   alt="Login illustration" 
-  className="w-full h-full object-cover rounded-lg shadow-lg opacity-0 transition-opacity duration-500"
+   className="w-full h-64 sm:h-80 md:h-96 lg:h-full object-cover rounded-lg shadow-lg opacity-0 transition-opacity duration-500"
   onLoad={(e) => e.currentTarget.classList.remove('opacity-0')} 
 />
       </div>

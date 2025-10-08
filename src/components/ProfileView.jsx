@@ -74,6 +74,11 @@ const ProfileView = ({ user }) => {
                     <p className="text-white capitalize">{user?.userRole || 'Not provided'}</p>
                   </div>
 
+                    <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1">Experience Level</label>
+                    <p className="text-white capitalize">{user?.experienceLevel || 'Not provided'}</p>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-1">Commitment Level</label>
                 <p className="text-white capitalize">

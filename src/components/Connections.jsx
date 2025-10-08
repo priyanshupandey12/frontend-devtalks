@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import api from '../store/axios';
 import { BASE_URL } from '../store/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { addconnections,updateConnectionStatus } from '../store/connectionSlice';
@@ -20,7 +21,7 @@ const Connections = () => {
   useEffect(() => {
     const fetchConnections = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/pending/acceptconnection`, {
+        const res = await api.get(`${BASE_URL}/pending/acceptconnection`, {
           withCredentials: true,
         });
         dispatch(addconnections(res.data));
@@ -121,7 +122,7 @@ useEffect(() => {
           <div key={connection._id} className="bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
             <div className="flex items-start p-6">
               <div className="flex-shrink-0">
-                <img className="w-24 h-24 rounded-full object-cover border-2 border-gray-100 hover:border-blue-400 transition-colors duration-300" src={connection.photoUrl} alt={`${connection.firstName} ${connection.lastName}`} />
+                <img className="w-24 h-24 rounded-full object-cover border-2 border-gray-100 hover:border-blue-400 transition-colors duration-300" src={connection?.photoUrl} alt={`${connection.firstName} ${connection.lastName}`} />
               </div>
               <div className="ml-6 flex-1">
               

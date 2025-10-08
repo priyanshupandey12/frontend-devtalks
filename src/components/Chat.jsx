@@ -2,6 +2,7 @@ import React, { useEffect, useState,useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useSocket } from './SocketContext';
+import api from '../store/axios';
 import { BASE_URL } from '../store/constant';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
@@ -9,12 +10,13 @@ import { ArrowLeft } from 'lucide-react';
 const Chat = () => {
   const { userId } = useParams();
   const [recipient, setRecipient] = useState(null);
-  const user = useSelector((store) => store.user);
+  const {user} = useSelector((store) => store.user);
   const loggedin = user ? user._id : null;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const { socket } = useSocket();  // 
+  const { socket } = useSocket();  
   const messagesEndRef = useRef(null);
+     const [isRecipientOnline, setIsRecipientOnline] = useState(false);
   
 
 
@@ -73,7 +75,7 @@ const Chat = () => {
         time: new Date(createdAt || Date.now()).toLocaleTimeString(),
         text,
         senderId,
-        id: _id || Date.now(), // fallback id
+        id: _id || Date.now(),
       };
 
       setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -103,29 +105,38 @@ const Chat = () => {
 
       setMessages((prevMessages) => [...prevMessages, newMsg]);
 
+
       socket.emit('sendmessage', messageToSend);
       setNewMessage('');
     }
   };
 
-  useEffect(() => {
- 
-  if (!socket || !recipient) return;
-
-  const handleStatusUpdate = ({ userId, isOnline }) => {
+   useEffect(() => {
+       
+        if (!socket || !recipient) return;
+    
    
-    if (userId === recipient._id) {
-      
-      setRecipient(prevRecipient => ({ ...prevRecipient, isOnline }));
-    }
-  };
+        socket.emit('check_user_status', { userIdToCheck: recipient._id });
 
-  socket.on('user_status_update', handleStatusUpdate);
+    }, [socket, recipient])
 
-  return () => {
-    socket.off('user_status_update', handleStatusUpdate);
-  };
-}, [socket, recipient]);
+   useEffect(() => {
+        if (!socket || !recipient) return;
+
+        const handleStatusUpdate = ({ userId, isOnline }) => {
+         
+            if (userId === recipient._id) {
+          
+                setIsRecipientOnline(isOnline);
+            }
+        };
+
+        socket.on('user_status_update', handleStatusUpdate);
+
+        return () => {
+            socket.off('user_status_update', handleStatusUpdate);
+        };
+    }, [socket, recipient]);
 
     useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,9 +153,9 @@ const Chat = () => {
       <img src={recipient.photoUrl} alt={recipient.firstName} className="w-10 h-10 rounded-full ml-4" />
       <div className="ml-3">
         <h2 className="font-bold text-white">{recipient.firstName} {recipient.lastName}</h2>
-        <p className={`text-xs font-semibold ${recipient.isOnline ? 'text-green-400' : 'text-gray-400'}`}>
-          {recipient.isOnline ? 'Online' : 'Offline'}
-        </p>
+        <p className={`text-xs font-semibold ${isRecipientOnline ? 'text-green-400' : 'text-gray-400'}`}>
+                                {isRecipientOnline ? 'Online' : 'Offline'}
+                            </p>
       </div>
     </>
   ) : (

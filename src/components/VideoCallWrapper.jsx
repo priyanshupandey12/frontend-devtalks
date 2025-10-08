@@ -10,6 +10,7 @@ import AgoraRTC, {
   RemoteUser,  
 } from 'agora-rtc-react';
 import axios from 'axios';
+import api from '../store/axios';
 
 const appId = AGORA_APP_ID; 
 const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
@@ -26,7 +27,7 @@ const VideoCall = () => {
 
   const handleJoinCall = async () => {
     try {
-      const response = await axios.post('http://localhost:7777/api/v1/users/agora/token', { channelName }, { withCredentials: true });
+      const response = await api.post('http://localhost:7777/api/v1/users/agora/token', { channelName }, { withCredentials: true });
       const { token } = response.data;
       await client.join(appId, channelName, token, 0);
 

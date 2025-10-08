@@ -4,6 +4,7 @@ import { BASE_URL } from '../store/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { addfeed } from '../store/feedSlice';
 import FilterModal from './FilterModal';
+import api from '../store/axios';
 import UserCard from './UserCard';
 import { Filter, X, Sparkles, Users, Target, Search, RefreshCw, AlertCircle } from 'lucide-react';
 const Feed = () => {
@@ -62,7 +63,7 @@ const Feed = () => {
 
       const url = `${BASE_URL}/pending/choosingcard${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       
-      const res = await axios.get(url, {
+      const res = await api.get(url, {
         withCredentials: true
       });
       

@@ -12,18 +12,20 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const user = useSelector((store) => store.user); 
+  const user = useSelector((store) => store.user.user); 
+  console.log(user)
 
   useEffect(() => {
 
     if (user) {
       const newSocket = io(SOCKET_URL, {
         withCredentials: true,
+         query: { userId: user._id }
       });
       setSocket(newSocket);
       
    
-      newSocket.emit('user_online', user._id);
+   
 
     
       return () => {

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Heart, X, MapPin, Calendar, Github, User, Building } from 'lucide-react';
+import { Heart, X, MapPin,  Github, User } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { removefeed } from '../store/feedSlice';
 import axios from 'axios';
+import api from '../store/axios';
 import { BASE_URL } from '../store/constant';
 
 const UserCard = ({ user, onRequestHandled }) => {
@@ -12,7 +13,7 @@ const UserCard = ({ user, onRequestHandled }) => {
 
   const handlerequest = async (status, _id) => {
     try {
-      const res = await axios.post(
+      const res = await api.post(
         `${BASE_URL}/connection/request/send/${status}/${_id}`,
         {},
         { withCredentials: true }
@@ -45,7 +46,7 @@ const UserCard = ({ user, onRequestHandled }) => {
   };
 
   return (
-    <div className="relative w-96 h-[500px] bg-gradient-to-b from-gray-800 via-gray-900 to-black rounded-2xl overflow-hidden shadow-2xl">
+    <div className="relative w-96 h-[550px] bg-gradient-to-b from-gray-800 via-gray-900 to-black rounded-2xl overflow-hidden shadow-2xl">
       
    
       <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
@@ -65,7 +66,7 @@ const UserCard = ({ user, onRequestHandled }) => {
         </h2>
         
         <div className="flex items-center justify-center mb-2">
-          <span className="text-blue-400 font-medium text-sm">{getExperienceDisplay()}</span>
+          <span className="text-blue-400 font-medium text-sm"><span className='text-gray-300'>Skill Level: </span> {getExperienceDisplay()}</span>
         </div>
 
         {user.location && formatLocation(user.location) && (
@@ -128,12 +129,7 @@ const UserCard = ({ user, onRequestHandled }) => {
   </div>
 </div>
 
-        {/* Building Projects Tag */}
-        <div className="mb-8 flex justify-center">
-          <div className="bg-blue-600 px-4 py-2 rounded-full text-sm font-medium">
-            Building Projects
-          </div>
-        </div>
+    
       </div>
 
  

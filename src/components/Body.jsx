@@ -1,38 +1,58 @@
-import React, { useEffect } from 'react'
-
+import React, { useEffect,useState } from 'react'
+import api from '../store/axios';
 import { Outlet } from 'react-router-dom'
 import Footer from './Footer'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { BASE_URL } from '../store/constant'
 import { useDispatch } from 'react-redux'
-import { login } from '../store/userSlice'
+import { login,logout } from '../store/userSlice'
 import Header from './Header'
 import { useSelector } from 'react-redux'
 const Body = () => {
   const navigate=useNavigate()
   const dispatch=useDispatch();
-  const userData=useSelector((store)=>store.user)
-  const fetchUser=async()=>{
-    if(userData) return;
-    try {
-      const res=await axios.get(`${BASE_URL}/profile/viewprofile`,{
-        withCredentials:true
-      })  
-      dispatch(login(res.data))
+  const userData=useSelector((store)=>store.user.user)
+    const [isLoading, setIsLoading] = useState(true);
 
-    } catch (error) {
-        console.log(error)
-        navigate('/')
+ useEffect(() => {
     
-    
+    if (userData) {
+      setIsLoading(false);
+      return;
+    }
+
+    const verifyUserSession = async () => {
+      try {
+        const res = await api.get(`${BASE_URL}/profile/viewprofile`);
+        
+      
+        if (res.data && res.data.user) {
+          dispatch(login({ user: res.data.user, token: res.data.accessToken }));
+        } else {
+        
+          dispatch(logout());
+          navigate('/');
+        }
+      } catch (error) {
+        console.error("Session verification failed:", error);
+     
+        dispatch(logout()); 
+        navigate('/');
+      } finally {
+      
+        setIsLoading(false);
       }
+    };
 
+    verifyUserSession();
+  }, []); 
+
+
+  if (isLoading) {
+ <div className="flex justify-center items-center h-64">
+    <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+  </div>
   }
-
-   useEffect(() => {
-    fetchUser()
-  }, [])
 
   return (
     <div className="bg-gray-900 min-h-screen flex flex-col">
