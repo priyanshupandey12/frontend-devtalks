@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {  Github, MessageCircle, Users, Video, Search, Code, Globe, Target } from 'lucide-react';
+import {  Github, MessageCircle, Users, Video, Search, Code, Globe, Target , Play, Pause} from 'lucide-react';
 
 
 const NUM_PARTICLES = 20;
@@ -27,8 +27,20 @@ const FindSimranLanding = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
+     const [isModalOpen, setIsModalOpen] = useState(false);
+  const videoRef = useRef(null);
+  const handleVideoClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   useEffect(() => {
+
     setIsVisible(true);
+
 
    
     setParticles(
@@ -55,6 +67,8 @@ const FindSimranLanding = () => {
         return { icon: icons[i], color: colors[i] };
       })
     );
+
+  
   }, []);
 
   return (
@@ -86,7 +100,7 @@ const FindSimranLanding = () => {
 
 
     <button
-      className="sm:hidden p-2 text-white hover:text-gray-300 transition-colors"
+      className="sm:hidden p-2 text-white hover:text-gray-300 transition-colors z-60"
       onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
       aria-label="Toggle mobile menu"
     >
@@ -96,74 +110,78 @@ const FindSimranLanding = () => {
     </button>
   </div>
 
-
 {mobileMenuOpen && (
-  <div className="sm:hidden absolute top-16 left-0 right-0 bg-gray-900/95 backdrop-blur-lg border-b border-gray-800/50 p-4 z-50 pointer-events-auto">
+  <div className=" fixed top-0 right-0 h-full w-64 bg-gray-900/95 backdrop-blur-lg p-6 z-30 flex flex-col">
     <LoginButton
       onClick={() => {
         navigate('/login');
         setMobileMenuOpen(false);
       }}
-      className="w-full"
+      className="w-full mb-4"
     />
   </div>
 )}
 </nav>
 
   
-      <section className="relative z-10 px-4 sm:px-6 py-10 sm:py-20">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 sm:gap-16 items-center">
-        
-          <div className={`transform transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-4 sm:mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Stop Coding</span><br/>
-              <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Alone.</span>
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 sm:mb-12 leading-relaxed">
-              DevTalks is the platform for engineering students in India to find partners, build projects, and grow their network.
-            </p>
+     <section className="relative z-10 px-4 sm:px-6 py-10 sm:py-20">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 sm:gap-16 items-center">
+        <div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-4 sm:mb-6 leading-tight">
+            <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Stop Coding</span><br/>
+            <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">Alone.</span>
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 sm:mb-12 leading-relaxed">
+            DevTalks is the platform for engineering students in India to find partners, build projects, and grow their network.
+          </p>
+        </div>
 
-          </div>
-
-    
-          <div className={`relative transform transition-all duration-500  ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/40 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-700/50 shadow-2xl">
-              <div className="relative h-60 sm:h-80 flex items-center justify-center">
-                <div className="relative">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center animate-pulse-fast">
-                    <Users className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-                  </div>
-                  {nodes.map((n, i) => (
-                    <div
-                      key={i}
-                      className={`absolute w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r ${n.color} rounded-full flex items-center justify-center text-xs sm:text-base`}
-                      style={{
-                        transform: `rotate(${i * 60}deg) translateX(80px) rotate(-${i * 60}deg)`,
-                        animation: `float 3s ease-in-out infinite ${i * 0.5}s`
-                      }}
-                    >
-                     <div className="w-4 h-4 sm:w-5 sm:h-5">{n.icon}</div>
-                    </div>
-                  ))}
+        {/* 🔹 Video Preview */}
+        <div className="relative">
+          <div
+            className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/40 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-700/50 shadow-2xl"
+            onClick={handleVideoClick}
+          >
+            <div className="relative h-60 sm:h-80 bg-black rounded-xl overflow-hidden cursor-pointer group">
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                src="YOUR_VIDEO_URL_HERE.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/30 transition">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-500/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white ml-1" />
                 </div>
               </div>
-
-              {particles.map((p, i) => (
-                <div
-                  key={i}
-                  className="absolute w-1 h-1 bg-blue-400 rounded-full animate-ping"
-                  style={{
-                    left: p.left,
-                    top: p.top,
-                    animationDelay: p.delay,
-                    animationDuration: p.duration
-                  }}
-                />
-              ))}
             </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* 🔹 Popup Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="relative w-full max-w-4xl">
+            <button
+              className="absolute top-4 right-4 text-white text-2xl"
+              onClick={closeModal}
+            >
+              ✕
+            </button>
+            <video
+              className="w-full h-auto rounded-xl"
+              src="YOUR_VIDEO_URL_HERE.mp4"
+              controls
+              autoPlay
+            />
+          </div>
+        </div>
+      )}
+    </section>
 
       <section className="relative z-10 px-4 sm:px-6 py-10 sm:py-20 bg-gray-800/30">
   <div className="max-w-7xl mx-auto">
@@ -369,7 +387,9 @@ const FindSimranLanding = () => {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
         }
       `}</style>
+      
     </div>
+
   );
 };
 

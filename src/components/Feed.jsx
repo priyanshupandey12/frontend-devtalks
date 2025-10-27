@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { BASE_URL } from '../store/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { addfeed } from '../store/feedSlice';
 import FilterModal from './FilterModal';
 import api from '../store/axios';
 import UserCard from './UserCard';
-import { Filter, X, Sparkles, Users, Target, Search, RefreshCw, AlertCircle } from 'lucide-react';
+import { Filter, X, Sparkles,  RefreshCw, AlertCircle } from 'lucide-react';
 const Feed = () => {
   const dispatch = useDispatch();
   const feed = useSelector((store) => store.feed.feed);
-  console.log(feed)
+
  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,7 +20,8 @@ const Feed = () => {
     activeWindow: '',
     locationRadius: '',
     primaryGoal: [],
-    hoursPerWeek: '',
+       userRole: [],
+    educationYear: [],
     useAdvancedFilters: false
   });
 
@@ -56,9 +56,13 @@ const Feed = () => {
           queryParams.append('primaryGoal', appliedFilters.primaryGoal.join(','));
         }
         
-        if (appliedFilters.hoursPerWeek) {
-          queryParams.append('hoursPerWeek', appliedFilters.hoursPerWeek);
+        if (appliedFilters.userRole.length > 0) {
+          queryParams.append('userRole', appliedFilters.userRole.join(','));
         }
+        if (appliedFilters.educationYear.length > 0) {
+          queryParams.append('educationYear', appliedFilters.educationYear.join(','));
+        }
+
       }
 
       const url = `${BASE_URL}/pending/choosingcard${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
@@ -95,7 +99,8 @@ const Feed = () => {
       activeWindow: '',
       locationRadius: '',
       primaryGoal: [],
-      hoursPerWeek: '',
+      userRole: [],
+      educationYear: [],
       useAdvancedFilters: false
     };
     setFilters(clearedFilters);
@@ -108,7 +113,8 @@ const Feed = () => {
     filters.activeWindow ||
     filters.locationRadius ||
     filters.primaryGoal.length > 0 ||
-    filters.hoursPerWeek
+      filters.userRole.length > 0 ||
+    filters.educationYear.length > 0
   );
 
  useEffect(() => {
@@ -121,7 +127,7 @@ const Feed = () => {
 
 
 if (isLoading) return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950">
+    <div className="flex items-center justify-center min-h-screen bg-grey-900">
      
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -185,118 +191,146 @@ if (isLoading) return (
   const users = feed && feed.users && Array.isArray(feed.users) ? feed.users : [];
 
    return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900">
+<div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-900 to-slate-950 relative overflow-hidden">
+  
 
-   
-      <div className="sticky top-0 z-20 backdrop-blur-xl bg-gray-800/70 border-b border-slate-700  ">
-    
-       
 
-        <div className="relative p-6 ">
-          <div className="flex items-center justify-between max-w-md mx-auto">
-            
-            <div className="flex items-center space-x-3">
-              <div className="relative ">
-               
-                <div className="relative bg-cyan-500 p-2 rounded-full">
-                  <Sparkles className="w-5 h-5 text-white animate-pulse" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
-              </div>
-
-              <div className="space-y-0">
-                <h1 className="text-2xl font-bold text-white">
-                  Discover
-                </h1>
-                <p className="text-xs text-gray-400 font-medium tracking-wide">
-                  Connect • Collaborate • Create
-                </p>
-              </div>
-            </div>
-
+ 
+  <div className="sticky top-0 z-20 backdrop-blur-2xl bg-gradient-to-r from-gray-900/90 border-b border-white/20 ">
+    <div className="relative p-4 sm:p-6">
+      <div className="flex items-center justify-between max-w-md mx-auto">
+        
+      
+        <div className="flex items-center space-x-3">
+          <div className="relative">
          
-            <div className="flex items-center space-x-2">
-              {hasActiveFilters && (
-                <button
-                  onClick={handleClearFilters}
-                  className="p-2 bg-red-600 hover:bg-red-700 rounded-full transition-colors"
-                  title="Clear filters"
-                >
-                  <X className="w-5 h-5 text-white" />
-                </button>
-              )}
-              <button
-                onClick={() => setShowFilters(true)}
-                className={`p-2 rounded-full transition-colors ${
-                  hasActiveFilters ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'
-                }`}
-              >
-                <Filter className="w-5 h-5 text-white" />
-              </button>
+            <div className="relative bg-gradient-to-br from-cyan-500 to-blue-600 p-2.5 rounded-2xl shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70 transition-all duration-300 hover:scale-110">
+              <Sparkles className="w-5 h-5 text-white animate-pulse" />
             </div>
           </div>
 
-      
+          <div className="space-y-0">
+            <h1 className="text-xl sm:text-3xl font-extrabold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
+              Discover
+            </h1>
+            <p className="text-[10px] sm:text-xs text-gray-400 font-medium tracking-wider">
+              Connect <span className="text-blue-400">•</span> Collaborate <span className="text-purple-400">•</span> Create
+            </p>
+          </div>
+        </div>
+
+     
+        <div className="flex items-center space-x-2">
           {hasActiveFilters && (
-            <div className="max-w-md mx-auto mt-3 flex flex-wrap gap-2 text-xs">
-              {filters.skills.length > 0 && (
-                <span className="px-2 py-1 bg-blue-600 text-white rounded-full">
-                  Skills: {filters.skills.length}
-                </span>
-              )}
-              {filters.experienceLevel.length > 0 && (
-                <span className="px-2 py-1 bg-green-600 text-white rounded-full">
-                  Level: {filters.experienceLevel.join(', ')}
-                </span>
-              )}
-              {filters.activeWindow && (
-                <span className="px-2 py-1 bg-purple-600 text-white rounded-full">
-                  Active: {filters.activeWindow}
-                </span>
-              )}
-              {filters.locationRadius && (
-                <span className="px-2 py-1 bg-orange-600 text-white rounded-full">
-                  {filters.locationRadius}km
-                </span>
-              )}
-            </div>
+            <button
+              onClick={handleClearFilters}
+              className="p-2 sm:p-2.5 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 rounded-xl transition-all duration-300 hover:scale-110 shadow-lg shadow-red-500/30 hover:shadow-red-500/50 group"
+              title="Clear filters"
+            >
+              <X className="w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:rotate-90 transition-transform duration-300" />
+            </button>
           )}
+          <button
+            onClick={() => setShowFilters(true)}
+            className={`p-2 sm:p-2.5 rounded-xl transition-all duration-300 hover:scale-110 shadow-lg ${
+              hasActiveFilters 
+                ? 'bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 shadow-blue-500/30 hover:shadow-blue-500/50' 
+                : 'bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 shadow-gray-500/20'
+            }`}
+          >
+            <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+          </button>
         </div>
       </div>
 
-      
-      <div className="flex flex-col items-center space-y-8 p-4 mt-8">
-        {users.length > 0 ? (
-          <UserCard user={users[0]} onRequestHandled={handleRequestHandled} />
-        ) : (
-          <div className="text-center text-white mt-20">
-            <div className="text-6xl mb-4">🔍</div>
-            <h2 className="text-2xl font-semibold mb-2">No users found</h2>
-            <p className="text-gray-400 mb-4">
-              {hasActiveFilters
-                ? "Try adjusting your filters to find more matches"
-                : "Check back later for new profiles"}
-            </p>
-            {hasActiveFilters && (
-              <button
-                onClick={handleClearFilters}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-              >
-                Clear Filters
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      {showFilters && (
-        <FilterModal
-          filters={filters}
-          onApply={handleApplyFilters}
-          onClose={() => setShowFilters(false)}
-        />
+    
+      {hasActiveFilters && (
+        <div className="max-w-md mx-auto mt-4 flex flex-wrap gap-2 text-xs animate-in fade-in slide-in-from-top-2 duration-300">
+          {filters.skills.length > 0 && (
+            <span className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full font-medium shadow-lg shadow-blue-500/30 backdrop-blur-sm border border-blue-400/30 hover:scale-105 transition-transform">
+              Skills: {filters.skills.length}
+            </span>
+          )}
+          {filters.experienceLevel.length > 0 && (
+            <span className="px-3 py-1.5 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-full font-medium shadow-lg shadow-green-500/30 backdrop-blur-sm border border-green-400/30 hover:scale-105 transition-transform">
+              Level: {filters.experienceLevel.join(', ')}
+            </span>
+          )}
+          {filters.activeWindow && (
+            <span className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-full font-medium shadow-lg shadow-purple-500/30 backdrop-blur-sm border border-purple-400/30 hover:scale-105 transition-transform">
+              Active: {filters.activeWindow}
+            </span>
+          )}
+          {filters.educationYear.length > 0 && (
+                <span className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-full font-medium shadow-lg shadow-purple-500/30 backdrop-blur-sm border border-purple-400/30 hover:scale-105 transition-transform">
+                  Year: {filters.educationYear.join(', ')}
+                </span>
+              )}
+              {filters.userRole.length > 0 && (
+                <span className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-full font-medium shadow-lg shadow-purple-500/30 backdrop-blur-sm border border-purple-400/30 hover:scale-105 transition-transform">
+                  Role: {filters.userRole.join(', ')}
+                </span>
+              )}
+              {filters.primaryGoal.length > 0 && (
+                <span className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-full font-medium shadow-lg shadow-purple-500/30 backdrop-blur-sm border border-purple-400/30 hover:scale-105 transition-transform">
+                  Looking For: {filters.primaryGoal.join(', ')}
+                </span>
+              )}
+              
+          {filters.locationRadius && (
+            <span className="px-3 py-1.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-full font-medium shadow-lg shadow-orange-500/30 backdrop-blur-sm border border-orange-400/30 hover:scale-105 transition-transform">
+              {filters.locationRadius}km
+            </span>
+          )}
+        </div>
       )}
     </div>
+  </div>
+
+
+  <div className="flex flex-col items-center space-y-8 p-4 mt-8 relative z-10">
+    {users.length > 0 ? (
+      <UserCard user={users[0]} onRequestHandled={handleRequestHandled} />
+    ) : (
+      <div className="text-center text-white mt-12 sm:mt-20 animate-in fade-in zoom-in duration-500">
+     
+        <div className="relative inline-block mb-6">
+          <div className="text-7xl sm:text-8xl mb-4 animate-bounce">🔍</div>
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl animate-pulse"></div>
+        </div>
+        
+      
+        <h2 className="text-2xl sm:text-3xl font-bold mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+          No users found
+        </h2>
+        <p className="text-sm sm:text-base text-gray-400 mb-6 max-w-md mx-auto leading-relaxed">
+          {hasActiveFilters
+            ? "Try adjusting your filters to discover more amazing collaborators"
+            : "Check back soon! New profiles are joining every day"}
+        </p>
+        
+       
+        {hasActiveFilters && (
+          <button
+            onClick={handleClearFilters}
+            className="px-6 sm:px-8 py-3 sm:py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-2xl shadow-blue-500/30 hover:shadow-blue-500/50 border border-blue-400/30"
+          >
+            Clear All Filters
+          </button>
+        )}
+      </div>
+    )}
+  </div>
+
+
+  {showFilters && (
+    <FilterModal
+      filters={filters}
+      onApply={handleApplyFilters}
+      onClose={() => setShowFilters(false)}
+    />
+  )}
+</div>
   );
 };
 

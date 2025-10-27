@@ -1,11 +1,10 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useSocket } from './SocketContext';
 import api from '../store/axios';
 import { BASE_URL } from '../store/constant';
-import axios from 'axios';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Send } from 'lucide-react';
 
 const Chat = () => {
   const { userId } = useParams();
@@ -16,48 +15,42 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState('');
   const { socket } = useSocket();  
   const messagesEndRef = useRef(null);
-     const [isRecipientOnline, setIsRecipientOnline] = useState(false);
-  
-
+  const [isRecipientOnline, setIsRecipientOnline] = useState(false);
 
   const fetchChat = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/chats/${userId}`, {
-      withCredentials: true,
-    });
-    const chatData = response.data.data;
-
-
-    const participantsMap = {};
-    if (chatData.participants) {
-      chatData.participants.forEach(p => {
-        participantsMap[p._id] = p;
+    try {
+      const response = await api.get(`${BASE_URL}/chats/${userId}`, {
+        withCredentials: true,
       });
+      const chatData = response.data.data;
+
+      const participantsMap = {};
+      if (chatData.participants) {
+        chatData.participants.forEach(p => {
+          participantsMap[p._id] = p;
+        });
+      }
+
+      const chatMessages = chatData.messages.map((msg) => {
+        const senderInfo = participantsMap[msg.senderId];
+        return {
+          sender: senderInfo ? senderInfo.firstName : 'Unknown User',
+          time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: msg.text,
+          senderId: msg.senderId,
+          id: msg._id,
+        };
+      });
+
+      setMessages(chatMessages);
+
+      const otherUser = chatData.participants.find(p => p._id === userId);
+      setRecipient(otherUser);
+
+    } catch (error) {
+      console.log(error);
     }
-
-    
-    const chatMessages = chatData.messages.map((msg) => {
-      const senderInfo = participantsMap[msg.senderId];
-      return {
-        sender: senderInfo ? senderInfo.firstName : 'Unknown User',
-        time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: msg.text,
-        senderId: msg.senderId,
-        id: msg._id,
-      };
-    });
-   
-
-    setMessages(chatMessages);
-
- 
-    const otherUser = chatData.participants.find(p => p._id === userId);
-    setRecipient(otherUser);
-
-  } catch (error) {
-    console.log(error);
-  }
-};
+  };
 
   useEffect(() => {
     fetchChat();
@@ -68,8 +61,8 @@ const Chat = () => {
 
     socket.emit('joinchat', { loggedin, userId });
 
-    socket.on('messageDelivered', ({ firstName, text, senderId, _id,createdAt }) => {
-       if (senderId === loggedin) return;
+    socket.on('messageDelivered', ({ firstName, text, senderId, _id, createdAt }) => {
+      if (senderId === loggedin) return;
       const newMessage = {
         sender: firstName,
         time: new Date(createdAt || Date.now()).toLocaleTimeString(),
@@ -105,90 +98,124 @@ const Chat = () => {
 
       setMessages((prevMessages) => [...prevMessages, newMsg]);
 
-
       socket.emit('sendmessage', messageToSend);
       setNewMessage('');
     }
   };
 
-   useEffect(() => {
-       
-        if (!socket || !recipient) return;
-    
-   
-        socket.emit('check_user_status', { userIdToCheck: recipient._id });
+  useEffect(() => {
+    if (!socket || !recipient) return;
+    socket.emit('check_user_status', { userIdToCheck: recipient._id });
+  }, [socket, recipient])
 
-    }, [socket, recipient])
+  useEffect(() => {
+    if (!socket || !recipient) return;
 
-   useEffect(() => {
-        if (!socket || !recipient) return;
+    const handleStatusUpdate = ({ userId, isOnline }) => {
+      if (userId === recipient._id) {
+        setIsRecipientOnline(isOnline);
+      }
+    };
 
-        const handleStatusUpdate = ({ userId, isOnline }) => {
-         
-            if (userId === recipient._id) {
-          
-                setIsRecipientOnline(isOnline);
-            }
-        };
+    socket.on('user_status_update', handleStatusUpdate);
 
-        socket.on('user_status_update', handleStatusUpdate);
+    return () => {
+      socket.off('user_status_update', handleStatusUpdate);
+    };
+  }, [socket, recipient]);
 
-        return () => {
-            socket.off('user_status_update', handleStatusUpdate);
-        };
-    }, [socket, recipient]);
-
-    useEffect(() => {
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
-    <div className="flex flex-col items-center bg-gradient-to-r from-gray-800 via-gray-900 to-black min-h-screen p-4">
-      <header className="w-full max-w-md flex items-center p-4 bg-gray-800 rounded-t-lg border-b border-gray-700">
-  <Link to="/connections" className="p-2 rounded-full hover:bg-gray-700 text-white">
-    <ArrowLeft />
-  </Link>
-  {recipient ? (
-    <>
-      <img src={recipient.photoUrl} alt={recipient.firstName} className="w-10 h-10 rounded-full ml-4" />
-      <div className="ml-3">
-        <h2 className="font-bold text-white">{recipient.firstName} {recipient.lastName}</h2>
-        <p className={`text-xs font-semibold ${isRecipientOnline ? 'text-green-400' : 'text-gray-400'}`}>
-                                {isRecipientOnline ? 'Online' : 'Offline'}
-                            </p>
-      </div>
-    </>
-  ) : (
-    <div className="ml-3">
-      <h2 className="font-bold text-white">Loading...</h2>
-    </div>
-  )}
-</header>
+    <div className="flex flex-col items-center bg-gradient-to-b from-gray-900 via-gray-950 to-black min-h-screen px-4 py-6 text-gray-100">
+      {/* HEADER */}
+      <header className="w-full max-w-2xl flex items-center justify-between bg-gray-800/90 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-xl border border-gray-700/50">
+        <div className="flex items-center space-x-3">
+          <Link
+            to="/connections"
+            className="p-2 rounded-full hover:bg-gray-700/80 text-gray-300 hover:text-white transition-all duration-200"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
 
-      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-4 overflow-y-auto h-[65vh] space-y-4">
+          {recipient ? (
+            <>
+              <div className="relative">
+                <img
+                  src={recipient.photoUrl}
+                  alt={recipient.firstName}
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-600 shadow-md"
+                />
+                {isRecipientOnline && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-gray-900 rounded-full"></span>
+                )}
+              </div>
+              <div className="ml-2">
+                <h2 className="font-semibold text-base sm:text-lg text-white">
+                  {recipient.firstName} {recipient.lastName}
+                </h2>
+                <p
+                  className={`text-xs font-medium ${
+                    isRecipientOnline ? 'text-green-400' : 'text-gray-400'
+                  }`}
+                >
+                  {isRecipientOnline ? 'Online' : 'Offline'}
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="ml-3">
+              <h2 className="font-semibold text-white">Loading...</h2>
+            </div>
+          )}
+        </div>
+      </header>
+
+ 
+      <div className="w-full max-w-2xl flex-1 bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-xl p-4 sm:p-6 mt-6 overflow-y-auto h-[65vh] border border-gray-700/50 space-y-4 scroll-smooth">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.senderId === loggedin ? 'justify-end' : 'justify-start'}`}>
+          <div
+            key={msg.id}
+            className={`flex ${
+              msg.senderId === loggedin ? 'justify-end' : 'justify-start'
+            }`}
+          >
             <div
-              className={`chat-bubble ${msg.senderId === loggedin ? 'bg-blue-500 text-white' : 'bg-green-500 text-white'} p-3 rounded-lg max-w-xs shadow-md`}
+              className={`relative p-3 sm:p-4 rounded-2xl max-w-[75%] sm:max-w-[60%] break-words shadow-lg transition-all hover:shadow-xl ${
+                msg.senderId === loggedin
+                  ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-br-none'
+                  : 'bg-gradient-to-br from-gray-700 to-gray-800 text-gray-100 rounded-bl-none border border-gray-600/50'
+              }`}
             >
-              <div>{msg.text}</div>
-              <div className="text-xs text-gray-300 mt-1">{msg.time}</div>
+              <div className="text-sm sm:text-base leading-relaxed">{msg.text}</div>
+              <div className={`text-[10px] mt-1.5 text-right ${
+                msg.senderId === loggedin ? 'text-blue-200' : 'text-gray-400'
+              }`}>
+                {msg.time}
+              </div>
             </div>
           </div>
         ))}
-          <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} />
       </div>
 
-      <div className="mt-4 flex items-center w-full max-w-md space-x-2">
+    
+      <div className="w-full max-w-2xl flex items-center mt-4 sm:mt-6 gap-2 sm:gap-3 bg-gray-800/90 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-700/50 shadow-xl">
         <input
           type="text"
           placeholder="Type a message..."
-          className="input input-bordered w-full max-w-xs text-gray-300 bg-gray-700 border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+          className="flex-1 bg-transparent text-gray-200 text-sm sm:text-base focus:outline-none placeholder-gray-500"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
         />
-        <button className="btn btn-primary text-white px-6 py-2 rounded-full" onClick={sendMessage}>
-          Send
+        <button
+          onClick={sendMessage}
+          className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-2.5 sm:p-3 rounded-full text-sm sm:text-base font-medium transition-all duration-200 shadow-lg hover:shadow-blue-500/30 flex items-center justify-center"
+        >
+          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
     </div>

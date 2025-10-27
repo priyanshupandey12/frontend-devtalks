@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null,       // user info (id, name, email, role, etc.)
-  accessToken: null // short-lived JWT
+  user: null    
 };
 
 const userSlice = createSlice({
@@ -10,15 +9,10 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
-      state.user = action.payload.user;           // user object
-      state.accessToken = action.payload.token;   // access token
-    },
-    refreshAccessToken: (state, action) => {
-      state.accessToken = action.payload;         // just update token when refreshed
+      state.user = action.payload.user;           
     },
     logout: (state) => {
       state.user = null;
-      state.accessToken = null;
     }
   }
 });

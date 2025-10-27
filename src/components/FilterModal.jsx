@@ -5,14 +5,26 @@ const FilterModal = ({ filters, onApply, onClose }) => {
   const [localFilters, setLocalFilters] = useState(filters);
   const [openDropdowns, setOpenDropdowns] = useState({});
 
-  const experienceLevels = ['Student', 'Beginner', 'Intermediate', 'Senior'];
-  const primaryGoals = ['Learning', 'Building Projects', 'Hackathon', 'Networking', 'Job Search'];
-  const hoursPerWeekOptions = ['1-5 hours', '5-10 hours', '10-15 hours', '15-20 hours', '20+ hours'];
+ const experienceLevels = ['Beginner', 'Intermediate', 'Advanced'];
+  const primaryGoals = [
+    'Build a Startup', 'Portfolio Project', 'Learn a New Skill', 
+    'Hackathon', 'Just for Fun', 'Learning', 'Building Projects', 
+    'Networking', 'Job Search', 'Project Partner', 'Learning Partner',
+    'Mentor', 'Mentee', 'Internship', 'Job', 'Freelance Collaboration'
+  ];
+
+  const userRoles = [
+    'Designer', 'Student', 'Frontend Developer', 'Backend Developer', 
+    'Fullstack Developer', 'Data Scientist', 'Data Analyst', 
+    'DevOps Engineer', 'Other'
+  ];
+
+    const educationYears = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate'];
   const activeWindowOptions = [
     { value: '7d', label: 'Active in last 7 days' },
     { value: '3m', label: 'Active in last 3 months' }
   ];
-  const skillOptions = ['React', 'JavaScript', 'Python', 'Node.js', 'Java', 'TypeScript', 'Flutter', 'Angular', 'MongoDB', 'PostgreSQL'];
+   const skillOptions = ['React', 'JavaScript', 'Python', 'Node.js', 'Java', 'TypeScript', 'Flutter', 'Angular', 'MongoDB', 'PostgreSQL', 'UI/UX', 'Figma'];
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdowns(prev => ({
@@ -44,7 +56,8 @@ const FilterModal = ({ filters, onApply, onClose }) => {
       localFilters.activeWindow ||
       localFilters.locationRadius ||
       localFilters.primaryGoal.length > 0 ||
-      localFilters.hoursPerWeek;
+      localFilters.userRole.length > 0 ||
+      localFilters.educationYear.length > 0;
 
     onApply({
       ...localFilters,
@@ -59,7 +72,8 @@ const FilterModal = ({ filters, onApply, onClose }) => {
       activeWindow: '',
       locationRadius: '',
       primaryGoal: [],
-      hoursPerWeek: '',
+      userRole: [],
+      educationYear: [],
       useAdvancedFilters: false
     });
   };
@@ -177,7 +191,24 @@ const FilterModal = ({ filters, onApply, onClose }) => {
             placeholder="All Levels"
           />
 
-    
+       
+          <DropdownSection
+            title="Education Level"
+            options={educationYears}
+            filterKey="educationYear"
+            isMultiSelect={true}
+            placeholder="Any Level"
+          />
+
+        
+          <DropdownSection
+            title="Professional Role"
+            options={userRoles}
+            filterKey="userRole"
+            isMultiSelect={true}
+            placeholder="Any Role"
+          />
+
           <DropdownSection
             title="Skills"
             options={skillOptions}
@@ -186,15 +217,13 @@ const FilterModal = ({ filters, onApply, onClose }) => {
             placeholder="All Skills"
           />
 
-        
           <DropdownSection
-            title="GitHub Activity (Last 7 Days)"
+            title="GitHub Activity"
             options={activeWindowOptions}
             filterKey="activeWindow"
             placeholder="Any Activity"
           />
 
-        
           <DropdownSection
             title="Primary Goal"
             options={primaryGoals}
@@ -204,12 +233,7 @@ const FilterModal = ({ filters, onApply, onClose }) => {
           />
 
        
-          <DropdownSection
-            title="Hours per Week"
-            options={hoursPerWeekOptions}
-            filterKey="hoursPerWeek"
-            placeholder="Any Hours"
-          />
+     
         </div>
 
    

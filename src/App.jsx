@@ -7,11 +7,11 @@ import Profile from './components/Profile'
 import Connections from './components/Connections'
 import Request from './components/Request'
 import SignUp from './components/SignUp'
-import Premium from './components/Premium'
+//import Premium from './components/Premium'
 import Chat from './components/Chat'
 import CallNotification from './components/CallNotification';
 import FindSimranLanding from './components/FindSimranLanding'
-import VideoCall from './components/VideoCallWrapper'
+//import VideoCall from './components/VideoCallWrapper'
 const App = () => {
   return (
 
@@ -37,15 +37,15 @@ const App = () => {
           <Route path="/request" element={<Body />}>
             <Route index element={<Request />} />
           </Route>
-          <Route path="/premium" element={<Body />}>
+          {/* <Route path="/premium" element={<Body />}>
             <Route index element={<Premium />} />
-          </Route>
+          </Route> */}
           <Route path="/chat/:userId" element={<Body />}>
             <Route index element={<Chat />} />
           </Route>
-         <Route path="/video-call/:channelName" element={<VideoCall />}>
+         {/* <Route path="/video-call/:channelName" element={<VideoCall />}>
             <Route index element={<VideoCall />} />
-          </Route>
+          </Route> */}
         </Routes>
           <CallNotification />
       </BrowserRouter>

@@ -13,7 +13,7 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const user = useSelector((store) => store.user.user); 
-  console.log(user)
+
 
   useEffect(() => {
 
