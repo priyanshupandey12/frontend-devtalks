@@ -1,6 +1,5 @@
-import React from 'react'
+
 import {BASE_URL} from '../store/constant'
-import axios from 'axios'
 import api from '../store/axios'
 
 const Premium = () => {

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { Heart, X, MapPin, Github, User, GraduationCap, BookOpen, Award } from 'lucide-react';
+import { Heart, X, MapPin, Github, User, GraduationCap, BookOpen, Award,Loader2 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { removefeed } from '../store/feedSlice';
-import axios from 'axios';
 import api from '../store/axios';
 import { BASE_URL } from '../store/constant';
+import toast from 'react-hot-toast';
 
 const UserCard = ({ user, onRequestHandled }) => {
-  console.log(user)
   const [showDetails, setShowDetails] = useState(false);
   const dispatch = useDispatch();
+const [loadingState, setLoadingState] = useState(null);
 
   const handlerequest = async (status, _id) => {
+    setLoadingState(status);
     try {
       const res = await api.post(
         `${BASE_URL}/connection/request/send/${status}/${_id}`,
@@ -21,8 +22,20 @@ const UserCard = ({ user, onRequestHandled }) => {
     
       dispatch(removefeed(_id));
       onRequestHandled();
+
+      if (status === 'Interested') {
+        toast.success('Connection request sent!');
+      } else {
+        toast.success('User removed from feed.');
+      }
+
     } catch (error) {
-      console.log(error);
+      console.error("Failed to handle request:", error); 
+      
+      const message = error.response?.data?.message || 'An error occurred. Please try again.';
+      toast.error(message);
+    }finally {
+      setLoadingState(null);
     }
   };
 
@@ -46,7 +59,7 @@ const UserCard = ({ user, onRequestHandled }) => {
 
   <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 pointer-events-none"></div>
   
-  {/* Profile Image */}
+
   <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-10">
     <div className="relative">
     <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl ring-4 ring-blue-500/20">
@@ -186,27 +199,43 @@ const UserCard = ({ user, onRequestHandled }) => {
   </div>
 
  
+
   <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 sm:space-x-6">
-    <button 
-      onClick={(e) => {
-        e.stopPropagation();
-        handlerequest('ignored', user._id);
-      }}
-      className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl border border-white/10 hover:shadow-red-500/20"
-    >
-      <X className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-    </button>
+ <button 
+ onClick={(e) => {
+ e.stopPropagation();
+ handlerequest('ignored', user._id);
+ }}
+     
+ disabled={loadingState !== null} 
+className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl border border-white/10 hover:shadow-red-500/20
+           disabled:opacity-50 disabled:cursor-not-allowed" 
+ >
+     
+      {loadingState === 'ignored' ? (
+        <Loader2 className="w-6 h-6 sm:w-7 sm:h-7 text-white animate-spin" />
+      ) : (
+        <X className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+      )}
+ </button>
+ 
+ <button 
+ onClick={(e) => {
+ e.stopPropagation();
+ handlerequest('Interested', user._id);
+ }}
+   
+      disabled={loadingState !== null}
+ className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl shadow-teal-500/50 border border-white/20 hover:shadow-teal-400/60
+           disabled:opacity-50 disabled:cursor-not-allowed" 
+ >
     
-    <button 
-      onClick={(e) => {
-        e.stopPropagation();
-        handlerequest('Interested', user._id);
-      }}
-      className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-2xl shadow-teal-500/50 border border-white/20 hover:shadow-teal-400/60"
-    >
-      <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white" />
-    </button>
-  </div>
+      {loadingState === 'Interested' ? (
+        <Loader2 className="w-6 h-6 sm:w-7 sm:h-7 text-white animate-spin" />
+      ) : (
+        <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white" />
+      )} </button>
+ </div>
 
 
   <button 
@@ -271,25 +300,33 @@ const UserCard = ({ user, onRequestHandled }) => {
          
 
         <div className="flex space-x-3 pt-4 sm:pt-5 border-t border-gray-700">
-          <button 
-            onClick={() => {
-              handlerequest('ignored', user._id);
-              setShowDetails(false);
-            }}
-            className="flex-1 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base shadow-lg"
-          >
-            Pass
-          </button>
-          <button 
-            onClick={() => {
-              handlerequest('Interested', user._id);
-              setShowDetails(false);
-            }}
-            className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base shadow-lg shadow-teal-500/30"
-          >
-            Connect
-          </button>
-        </div>
+ <button 
+ onClick={() => {
+ handlerequest('ignored', user._id);
+ setShowDetails(false);
+ }}
+          
+            disabled={loadingState !== null}
+ className="flex-1 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base shadow-lg
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+ >
+        
+ {loadingState === 'ignored' ? 'Passing...' : 'Pass'}
+ </button>
+ <button 
+ onClick={() => {
+ handlerequest('Interested', user._id);
+ setShowDetails(false);
+ }}
+         
+            disabled={loadingState !== null}
+ className="flex-1 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white py-3 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base shadow-lg shadow-teal-500/30
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+ >
+           
+            {loadingState === 'Interested' ? 'Connecting...' : 'Connect'}
+ </button>
+ </div>
       </div>
     </div>
   )}

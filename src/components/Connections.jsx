@@ -1,21 +1,23 @@
 
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import api from '../store/axios';
 import { BASE_URL } from '../store/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { addconnections, updateConnectionStatus } from '../store/connectionSlice';
 import { Link } from 'react-router-dom';
 import { useSocket } from './SocketContext';
-import { Search, Filter, X, ChevronDown, MessageCircle, Clock } from 'lucide-react';
+import { Search, Filter, X, ChevronDown, MessageCircle, Clock ,Loader2} from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Connections = () => {
   const dispatch = useDispatch();
   const connectionsData = useSelector((store) => store.connections.connections);
   const [error, setError] = useState(null);
   const { socket } = useSocket();
-
+const [loading, setLoading] = useState(true);
 
   const [searchName, setSearchName] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(searchName);
   const [selectedSkills, setSelectedSkills] = useState('');
   const [lastActive, setLastActive] = useState('');
   const [sortBy, setSortBy] = useState('firstName');
@@ -26,13 +28,26 @@ const Connections = () => {
   const [totalConnections, setTotalConnections] = useState(0);
 
   useEffect(() => {
-    fetchConnections();
-  }, [dispatch, searchName, selectedSkills, lastActive, sortBy, order, page]);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchName);
+      setPage(1); 
+    }, 500); 
+
+  
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchName]);
+
+useEffect(() => {
+   fetchConnections();
+}, [dispatch, debouncedSearch, selectedSkills, lastActive, sortBy, order, page]);
 
   const fetchConnections = async () => {
+    setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (searchName) params.append('searchName', searchName);
+     if (debouncedSearch) params.append('searchName', debouncedSearch);
       if (selectedSkills) params.append('skills', selectedSkills);
       if (lastActive) params.append('lastActive', lastActive);
       params.append('sort', sortBy);
@@ -46,32 +61,22 @@ const Connections = () => {
       
       dispatch(addconnections(res.data));
       setTotalConnections(res.data.total || 0);
+      if (error) setError(null);
     } catch (error) {
-      console.error('Error fetching connections:', error);
-      setError(error.message);
+     const errorMsg = error.response?.data?.error || "Failed to fetch connections.";
+      
+      if (!connectionsData?.data?.length) {
+        setError(errorMsg);
+      } else {
+    
+        toast.error(errorMsg);
+      }
+    } finally {
+    
+      setLoading(false);
     }
   };
 
-  // const handleCallClick = (connection) => {
-  //   if (!currentUser || !connection) return;
-
-  //   const ids = [currentUser._id, connection._id];
-  //   ids.sort();
-  //   const channelName = ids.join('_');
-
-  //   if (socket) {
-  //     socket.emit("outgoing_call", { 
-  //       to: connection._id, 
-  //       from: currentUser,
-  //       channelName 
-  //     });
-  //   } else {
-  //     console.error("Socket not connected. Cannot make a call.");
-  //     return;
-  //   }
-
-  //   navigate(`/video-call/${channelName}`);
-  // };
 
   useEffect(() => {
     if (!socket) return;
@@ -105,26 +110,27 @@ const Connections = () => {
 
   const hasActiveFilters = searchName || selectedSkills || lastActive || sortBy !== 'firstName' || order !== 'asc';
 
-  if (error) {
-    return (
-      <div className='flex items-center justify-center min-h-screen bg-gray-900'>
-        <div className='bg-red-900/20 border border-red-500 rounded-lg p-6 max-w-md'>
-          <h1 className='text-xl font-semibold text-red-400'>Error: {error}</h1>
-        </div>
-      </div>
-    );
-  }
+if (error) {
+ return (
+ <div className='flex items-center justify-center min-h-screen bg-gray-900'>
+ <div className='bg-red-900/20 border border-red-500 rounded-lg p-6 max-w-md'>
+ <h1 className='text-xl font-semibold text-red-400'>Error: {error}</h1>
+ </div>
+ </div>
+ );
+ }
 
-  if (!connectionsData) {
-    return (
-      <div className='flex items-center justify-center min-h-screen bg-gray-900'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4'></div>
+
+ if (loading && !connectionsData?.data) {
+return (
+ <div className='flex items-center justify-center min-h-screen bg-gray-900'>
+ <div className='text-center'>
+ <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4'></div>
           <h1 className='text-xl text-gray-300'>Loading connections...</h1>
-        </div>
-      </div>
-    );
-  }
+ </div>
+ </div>
+);
+ }
 
   const connections = connectionsData.data || [];
   const totalPages = Math.ceil(totalConnections / limit);
@@ -173,16 +179,16 @@ const Connections = () => {
         
             <div className='flex-1 relative'>
               <Search className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5' />
-              <input
-                type='text'
-                placeholder='Search by name...'
-                value={searchName}
-                onChange={(e) => {
-                  setSearchName(e.target.value);
-                  setPage(1);
-                }}
-                className='w-full pl-10 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent'
-              />
+            <input
+ type='text'
+placeholder='Search by name...'
+ value={searchName}
+onChange={(e) => {
+                
+setSearchName(e.target.value);
+ }}
+ className='w-full pl-10 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent'
+ />
             </div>
 
         
@@ -206,7 +212,16 @@ const Connections = () => {
                 <span>Clear</span>
               </button>
             )}
+
+                 {loading && (
+            <div className='flex items-center justify-center px-4'>
+              <Loader2 className='w-5 h-5 text-cyan-500 animate-spin' />
+            </div>
+          )}
+        
           </div>
+
+     
 
       
           {showFilters && (
@@ -272,7 +287,7 @@ const Connections = () => {
         </div>
 
   
-        {connections.length === 0 ? (
+        {!loading && connections.length === 0 ? (
           <div className='text-center py-16 bg-gray-800 rounded-xl border border-gray-700'>
             <div className='text-gray-400 mb-2'>
               <MessageCircle className='w-16 h-16 mx-auto mb-4 opacity-50' />
@@ -405,6 +420,7 @@ const Connections = () => {
                   <button
                     key={pageNum}
                     onClick={() => setPage(pageNum)}
+                    disabled={loading}
                     className={`px-4 py-2 rounded-lg transition-colors border ${
                       page === pageNum
                         ? 'bg-cyan-500 text-white border-cyan-500'
@@ -419,7 +435,7 @@ const Connections = () => {
 
             <button
               onClick={() => setPage(Math.min(totalPages, page + 1))}
-              disabled={page === totalPages}
+              disabled={page === totalPages || loading}
               className='px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-gray-600'
             >
               Next

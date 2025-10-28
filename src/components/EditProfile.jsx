@@ -4,6 +4,7 @@ import { BASE_URL } from '../store/constant';
 import api from '../store/axios';
 import { login } from '../store/userSlice';
 import { ArrowLeft, Save, X, Upload, MapPin, Briefcase, Target, Clock, Code, Github, Linkedin, Globe, User } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const EditProfile = ({ user, onCancel }) => {
   const dispatch = useDispatch();
@@ -98,14 +99,19 @@ const [formErrors, setFormErrors] = useState({});
 
       dispatch(login({ user: response.data.user }));
       setLoading(false);
+      toast.success('Profile saved successfully!');
       if (onCancel) onCancel(); 
     } catch (error) {
    
-    if (error.response?.data?.details) {
-    setFormErrors(error.response.data.details);
-  } else {
-    setFormErrors({ general: error.response?.data?.error || "An unexpected error occurred." });
-  }
+if (error.response?.data?.details) {
+      setFormErrors(error.response.data.details);
+      toast.error('Please fix the errors in the form.'); 
+    } else {
+
+      const message = error.response?.data?.error || "An unexpected error occurred.";
+      toast.error(message);
+   
+    }
       setLoading(false);
     }
   };
@@ -153,13 +159,14 @@ const [formErrors, setFormErrors] = useState({});
         </div>
       </div>
 
-   {formErrors.general && (
-  <div className="max-w-7xl mx-auto px-6 mt-6">
-    <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300">
-      {formErrors.general}
-    </div>
-  </div>
-)}
+{formErrors.general && (
+      <div className="max-w-7xl mx-auto px-6 mt-6">
+      <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300">
+        {formErrors.general}
+      </div>
+      </div>
+    )}
+    
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-12 gap-6">

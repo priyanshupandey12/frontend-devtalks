@@ -5,7 +5,7 @@ import { BASE_URL } from '../store/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from '../store/userSlice';
 import Header from './Header';
-
+import Footer from './Footer';
 
 const FullPageSpinner = () => (
   <div className="flex justify-center items-center h-screen bg-gray-900">
@@ -122,6 +122,7 @@ const Body = () => {
       <main className="pt-16 flex-1">
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }
