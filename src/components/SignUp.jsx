@@ -263,11 +263,7 @@ return (
           )}
           
       
-          {apiError && (
-            <div className="my-2 text-center text-red-400 bg-red-900/40 p-3 rounded-lg text-sm">
-              {apiError}
-            </div>
-          )}
+ 
 
           <button
             type="submit"

@@ -48,7 +48,7 @@ const Chat = () => {
       setRecipient(otherUser);
 
     } catch (error) {
-      console.log(error);
+      console.error("Failed to fetch chat:", error);
     }
   };
 

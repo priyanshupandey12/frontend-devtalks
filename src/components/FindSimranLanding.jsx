@@ -1,6 +1,6 @@
 import { useState, useEffect,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {  Github, MessageCircle, Users, Video, Search, Code, Globe, Target , Play, Pause} from 'lucide-react';
+import {  Github, MessageCircle, Users, Video, Search, Code, Globe, Target , Play, X} from 'lucide-react';
 
 
 const NUM_PARTICLES = 20;
@@ -29,13 +29,21 @@ const FindSimranLanding = () => {
 
      const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef(null);
-  const handleVideoClick = () => {
-    setIsModalOpen(true);
-  };
+const handleVideoClick = () => {
+  setIsModalOpen(true);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  if (videoRef.current) {
+    videoRef.current.pause();
+  }
+};
+
+const closeModal = () => {
+  setIsModalOpen(false);
+
+  if (videoRef.current) {
+    videoRef.current.play();
+  }
+};
 
   useEffect(() => {
 
@@ -138,49 +146,57 @@ const FindSimranLanding = () => {
 
         {/* 🔹 Video Preview */}
         <div className="relative">
-          <div
-            className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/40 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-gray-700/50 shadow-2xl"
-            onClick={handleVideoClick}
-          >
-            <div className="relative h-60 sm:h-80 bg-black rounded-xl overflow-hidden cursor-pointer group">
-              <video
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                src="YOUR_VIDEO_URL_HERE.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/30 transition">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-500/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white ml-1" />
-                </div>
-              </div>
+    <div
+          className="relative h-60 sm:h-80 bg-black rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer group shadow-2xl border border-gray-700/50 transition-all duration-300 hover:shadow-blue-500/20"
+          onClick={handleVideoClick}
+        >
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+            src="/video.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition-all duration-300">
+        
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 group-hover:scale-110 transition-transform duration-300">
+              <Play className="w-8 h-8 sm:w-10 sm:h-10 text-white ml-1" />
             </div>
           </div>
         </div>
+        </div>
       </div>
 
-      {/* 🔹 Popup Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="relative w-full max-w-4xl">
-            <button
-              className="absolute top-4 right-4 text-white text-2xl"
-              onClick={closeModal}
+{isModalOpen && (
+          <div
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={closeModal} 
+          >
+            <div
+              className="relative w-full max-w-4xl"
+              onClick={(e) => e.stopPropagation()} 
             >
-              ✕
-            </button>
-            <video
-              className="w-full h-auto rounded-xl"
-              src="YOUR_VIDEO_URL_HERE.mp4"
-              controls
-              autoPlay
-            />
+          
+              <button
+                className="absolute -top-10 -right-2 sm:top-0 sm:-right-12 text-white/70 hover:text-white transition-colors z-10"
+                onClick={closeModal}
+                aria-label="Close video player"
+              >
+                <X className="w-8 h-8" />
+              </button>
+              
+              <video
+                className="w-full h-auto rounded-xl shadow-2xl" 
+                src="/video.mp4"
+                controls
+                autoPlay
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </section>
 
       <section className="relative z-10 px-4 sm:px-6 py-10 sm:py-20 bg-gray-800/30">

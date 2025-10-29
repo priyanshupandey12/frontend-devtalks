@@ -448,14 +448,11 @@ if (error.response?.data?.details) {
         }`}
 >
   <option value="">Select a Goal</option>
-  <option value="Build a Startup">Build a Startup</option>
-  <option value="Portfolio Project">Portfolio Project</option>
-  <option value="Learn a New Skill">Learn a New Skill</option>
-  <option value="Hackathon">Hackathon</option>
-  <option value="Just for Fun">Just for Fun</option>
-  <option value="Learning">Learning</option>
-  <option value="Building Projects">Building Projects</option>
-  <option value="Networking">Networking</option>
+  <option value="Find Teammates for a Project">Find Teammates for a Project</option>
+  <option value="Find a Job or Internship">Find a Job or Internship</option>
+  <option value="Find a Mentor or Partner to Learn">Find a Mentor or Partner to Learn</option>
+  <option value="Network and Explore">Network and Explore</option>
+
 </select>
  {formErrors.primaryGoal && (
         <p className="text-sm text-red-400">{formErrors.primaryGoal[0]}</p>
