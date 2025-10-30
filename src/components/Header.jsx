@@ -20,14 +20,16 @@ const Header = () => {
 
 
   const handleLogout = async () => {
+         navigate("/");
+      dispatch(logout());
     try {
    
       await api.get(`${BASE_URL}/users/logout`, {
         withCredentials: true,
       });
-      dispatch(logout());
+  
     
-      navigate("/");
+     
     } catch (error) {
       console.error("Logout failed:", error);
     }
