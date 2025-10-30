@@ -306,7 +306,6 @@ if (error.response?.data?.details) {
 >
   <option value="">Select Role</option>
   <option value="Student">Student</option>
-  <option value="Developer">Developer</option>
   <option value="Designer">Designer</option>
   <option value="Frontend Developer">Frontend Developer</option>
   <option value="Backend Developer">Backend Developer</option>
