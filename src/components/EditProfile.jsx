@@ -104,14 +104,23 @@ const [formErrors, setFormErrors] = useState({});
     } catch (error) {
    
 if (error.response?.data?.details) {
-      setFormErrors(error.response.data.details);
-      toast.error('Please fix the errors in the form.'); 
-    } else {
+    setFormErrors(error.response.data.details);
 
-      const message = error.response?.data?.error || "An unexpected error occurred.";
-      toast.error(message);
-   
-    }
+
+    const allErrors = Object.values(error.response.data.details)
+      .flat()
+      .join(', ');
+
+    toast.error(allErrors || "Please check the form fields.");
+  } 
+ 
+  else if (error.response?.data?.error) {
+    toast.error(error.response.data.error);
+  } 
+
+  else {
+    toast.error("Something went wrong. Please try again.");
+  }
       setLoading(false);
     }
   };
@@ -267,7 +276,7 @@ if (error.response?.data?.details) {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    required
+                
                     className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 focus:border-blue-500 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                   >
                     <option value="">Select Gender</option>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, Lock,Briefcase } from 'lucide-react';
 import { BASE_URL } from '../store/constant';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link  } from 'react-router-dom';
 import api from '../store/axios';
 
 const SignUp = () => {
@@ -275,9 +275,12 @@ return (
 
         <p className="mt-6 text-center text-gray-300 text-sm">
           Already have an account?{' '}
-          <a href="/login" className="text-purple-400 hover:text-purple-300 font-medium">
-            Login
-          </a>
+          <Link
+    to="/login"
+    className="text-purple-400 hover:text-purple-300 font-medium"
+  >
+    Login
+  </Link>
         </p>
       </div>
     </div>

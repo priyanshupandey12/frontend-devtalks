@@ -3,7 +3,7 @@ import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import api from '../store/axios';
 import { useDispatch } from 'react-redux';
 import { login } from '../store/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , Link } from 'react-router-dom';
 import { BASE_URL } from '../store/constant';
 import GoogleAuthButton from "./GoogleAuthButton";
 
@@ -175,9 +175,9 @@ const Login = () => {
           <div className="text-center">
             <p className="text-sm text-gray-400">
               Don't have an account?{' '}
-              <a href="/signup" className="font-medium text-purple-500 hover:text-purple-400">
-                Sign up
-              </a>
+          <Link to="/signup" className="font-medium text-purple-500 hover:text-purple-400">
+  Sign up
+</Link>
             </p>
           </div>
         </div>
