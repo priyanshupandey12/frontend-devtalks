@@ -290,7 +290,7 @@ if (isLoading) return (
 
   <div className="flex flex-col items-center space-y-8 p-4 mt-8 relative z-10">
     {users.length > 0 ? (
-      <UserCard user={users[0]} onRequestHandled={handleRequestHandled} />
+      <UserCard user={users.slice(0, 3)} onRequestHandled={handleRequestHandled} />
     ) : (
       <div className="text-center text-white mt-12 sm:mt-20 animate-in fade-in zoom-in duration-500">
      
