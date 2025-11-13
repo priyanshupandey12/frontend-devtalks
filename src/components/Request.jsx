@@ -165,7 +165,7 @@ const Request = () => {
                         {user?.educationYear === 'Graduate' && user?.yearsOfExperience > 0 ? (
                           <>
                             <Award className="w-4 h-4" />
-                            <span>{user.userRole} • {user.yearsOfExperience} yrs</span>
+                            <span>{user?.userRole} • {user?.yearsOfExperience} yrs</span>
                           </>
                         ) : (
                           <>
