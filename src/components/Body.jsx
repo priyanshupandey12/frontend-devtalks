@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../store/axios';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -9,11 +10,11 @@ import Footer from './Footer';
 
 const FullPageSpinner = () => (
   <div 
-    className="flex justify-center items-center h-screen bg-gray-900" 
+    className="flex justify-center items-center h-screen bg-black" 
     role="status" 
     aria-label="Loading"
   >
-    <div className="w-16 h-16 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+    <div className="w-16 h-16 border-4 border-gray-600 border-dashed rounded-full animate-spin"></div>
   </div>
 );
 
@@ -21,8 +22,8 @@ const FullPageError = ({ errorMessage, onRetry }) => {
   const navigate = useNavigate();
   
   return (
-    <div className="flex flex-col justify-center items-center text-center h-screen bg-gray-900 text-white p-6">
-      <h2 className="text-3xl font-bold text-red-500 mb-4">
+    <div className="flex flex-col justify-center items-center text-center h-screen bg-black text-white p-6">
+      <h2 className="text-3xl font-bold text-red-400 mb-4">
         Oops! Something went wrong.
       </h2>
       <p className="text-lg text-gray-300 mb-8 max-w-md">
@@ -31,7 +32,7 @@ const FullPageError = ({ errorMessage, onRetry }) => {
       <div className="space-x-4">
         <button
           onClick={onRetry || (() => navigate('/'))}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          className="px-6 py-3 bg-white text-black rounded-xl font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
           aria-label="Go to homepage"
         >
           Go to Homepage
@@ -39,7 +40,7 @@ const FullPageError = ({ errorMessage, onRetry }) => {
         {onRetry && (
           <button
             onClick={onRetry}
-            className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+            className="px-6 py-3 bg-white text-black rounded-xl font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
             aria-label="Retry verification"
           >
             Retry
@@ -58,7 +59,6 @@ const Body = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const hasVerifiedRef = useRef(false); 
-
 
   const getErrorMessage = (err) => {
     if (err.response) {
@@ -102,7 +102,6 @@ const Body = () => {
       dispatch(logout());
       
       if (err.response?.status === 401 || err.response?.status === 403) {
-      
         navigate('/login', { replace: true });
       } else {
         setError(userErrorMessage);
@@ -138,7 +137,7 @@ const Body = () => {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen flex flex-col">
+    <div className="bg-black min-h-screen flex flex-col">
       <Header />
       <main className="pt-16 flex-1">
         <Outlet />

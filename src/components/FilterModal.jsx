@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { X, Filter, ChevronDown } from 'lucide-react';
 
@@ -5,12 +7,12 @@ const FilterModal = ({ filters, onApply, onClose }) => {
   const [localFilters, setLocalFilters] = useState(filters);
   const [openDropdowns, setOpenDropdowns] = useState({});
 
- const experienceLevels = ['Beginner', 'Intermediate', 'Advanced'];
+  const experienceLevels = ['Beginner', 'Intermediate', 'Advanced'];
   const primaryGoals = [
-       'Find Teammates for a Project', 
-      'Find a Job or Internship',     
-      'Find a Mentor or Partner to Learn', 
-      'Network and Explore'
+    'Find Teammates for a Project', 
+    'Find a Job or Internship',     
+    'Find a Mentor or Partner to Learn', 
+    'Network and Explore'
   ];
 
   const userRoles = [
@@ -19,12 +21,12 @@ const FilterModal = ({ filters, onApply, onClose }) => {
     'DevOps Engineer', 'Other'
   ];
 
-    const educationYears = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate'];
+  const educationYears = ['1st Year', '2nd Year', '3rd Year', '4th Year', 'Graduate'];
   const activeWindowOptions = [
     { value: '7d', label: 'Active in last 7 days' },
     { value: '3m', label: 'Active in last 3 months' }
   ];
-   const skillOptions = ['React', 'JavaScript', 'Python', 'Node.js', 'Java', 'TypeScript', 'Flutter', 'Angular', 'MongoDB', 'PostgreSQL', 'UI/UX', 'Figma'];
+  const skillOptions = ['React', 'JavaScript', 'Python', 'Node.js', 'Java', 'TypeScript', 'Flutter', 'Angular', 'MongoDB', 'PostgreSQL', 'UI/UX', 'Figma'];
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdowns(prev => ({
@@ -86,58 +88,60 @@ const FilterModal = ({ filters, onApply, onClose }) => {
       : placeholder;
 
     return (
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+      <div className="mb-2 w-full">
+        <label className="block text-xs font-medium text-gray-400 mb-1">
           {title}
         </label>
         <div className="relative">
           <button
             onClick={() => toggleDropdown(filterKey)}
-            className="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded-md flex items-center justify-between hover:bg-gray-600 transition-colors"
+            className="w-full bg-black/50 border border-gray-700 text-white px-3 py-1.5 rounded-md flex items-center justify-between hover:bg-gray-800/50 transition-colors text-xs"
           >
-            <span className="text-sm">{displayText}</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <span className="text-xs truncate">{displayText}</span>
+            <ChevronDown className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </button>
           
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 bg-gray-700 border border-gray-600 rounded-md mt-1 z-10 max-h-48 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 bg-black/90 border border-gray-700 rounded-md mt-1 z-10 max-h-32 overflow-y-auto flex flex-col">
               {!isMultiSelect && (
                 <button
                   onClick={() => {
                     handleSingleSelect(filterKey, '');
                     toggleDropdown(filterKey);
                   }}
-                  className="w-full text-left px-3 py-2 text-sm text-white hover:bg-gray-600 transition-colors"
+                  className="w-full text-left px-3 py-1.5 text-xs text-white hover:bg-gray-800/50 transition-colors"
                 >
                   {placeholder}
                 </button>
               )}
-              {options.map((option) => {
-                const optionValue = typeof option === 'object' ? option.value : option;
-                const optionLabel = typeof option === 'object' ? option.label : option;
-                const isSelected = selectedValues.includes(optionValue);
-                
-                return (
-                  <button
-                    key={optionValue}
-                    onClick={() => {
-                      if (isMultiSelect) {
-                        handleMultiSelect(filterKey, optionValue);
-                      } else {
-                        handleSingleSelect(filterKey, optionValue);
-                        toggleDropdown(filterKey);
-                      }
-                    }}
-                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                      isSelected 
-                        ? 'bg-teal-600 text-white' 
-                        : 'text-white hover:bg-gray-600'
-                    }`}
-                  >
-                    {optionLabel}
-                  </button>
-                );
-              })}
+              <div className="flex flex-wrap gap-1 p-2">
+                {options.map((option) => {
+                  const optionValue = typeof option === 'object' ? option.value : option;
+                  const optionLabel = typeof option === 'object' ? option.label : option;
+                  const isSelected = selectedValues.includes(optionValue);
+                  
+                  return (
+                    <button
+                      key={optionValue}
+                      onClick={() => {
+                        if (isMultiSelect) {
+                          handleMultiSelect(filterKey, optionValue);
+                        } else {
+                          handleSingleSelect(filterKey, optionValue);
+                          toggleDropdown(filterKey);
+                        }
+                      }}
+                      className={`px-2 py-1 text-xs rounded transition-colors ${
+                        isSelected 
+                          ? 'bg-gray-600 text-white' 
+                          : 'text-gray-300 hover:bg-gray-800/50'
+                      }`}
+                    >
+                      {optionLabel}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -147,10 +151,8 @@ const FilterModal = ({ filters, onApply, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex z-50">
-    
-      <div className="w-80 bg-gray-800 h-full overflow-y-auto">
-     
-        <div className="p-4 border-b border-gray-700">
+      <div className="w-80 bg-black/95 h-full overflow-y-auto border-r border-gray-700/50">
+        <div className="p-4 border-b border-gray-700/50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-white" />
@@ -158,17 +160,16 @@ const FilterModal = ({ filters, onApply, onClose }) => {
             </div>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-gray-700 rounded-full text-gray-300 hover:text-white transition-colors"
+              className="p-1 hover:bg-gray-800/50 rounded-full text-gray-400 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
-     
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+        <div className="p-4 space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className="w-full">
+            <label className="block text-xs font-medium text-gray-400 mb-1">
               Location
             </label>
             <input
@@ -178,77 +179,72 @@ const FilterModal = ({ filters, onApply, onClose }) => {
               placeholder="Enter radius in km"
               min="1"
               max="1000"
-              className="w-full bg-gray-700 border border-gray-600 text-white px-3 py-2 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent placeholder-gray-400"
+              className="w-full bg-black/50 border border-gray-700 text-white px-3 py-1.5 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-transparent placeholder-gray-500 text-xs"
             />
           </div>
 
-        
-          <DropdownSection
-            title="Experience Level"
-            options={experienceLevels}
-            filterKey="experienceLevel"
-            isMultiSelect={true}
-            placeholder="All Levels"
-          />
+          <div className="flex flex-col space-y-2">
+            <DropdownSection
+              title="Experience Level"
+              options={experienceLevels}
+              filterKey="experienceLevel"
+              isMultiSelect={true}
+              placeholder="All Levels"
+            />
 
-       
-          <DropdownSection
-            title="Education Level"
-            options={educationYears}
-            filterKey="educationYear"
-            isMultiSelect={true}
-            placeholder="Any Level"
-          />
+            <DropdownSection
+              title="Education Level"
+              options={educationYears}
+              filterKey="educationYear"
+              isMultiSelect={true}
+              placeholder="Any Level"
+            />
 
-        
-          <DropdownSection
-            title="Professional Role"
-            options={userRoles}
-            filterKey="userRole"
-            isMultiSelect={true}
-            placeholder="Any Role"
-          />
+            <DropdownSection
+              title="Professional Role"
+              options={userRoles}
+              filterKey="userRole"
+              isMultiSelect={true}
+              placeholder="Any Role"
+            />
 
-          <DropdownSection
-            title="Skills"
-            options={skillOptions}
-            filterKey="skills"
-            isMultiSelect={true}
-            placeholder="All Skills"
-          />
+            <DropdownSection
+              title="Skills"
+              options={skillOptions}
+              filterKey="skills"
+              isMultiSelect={true}
+              placeholder="All Skills"
+            />
 
-          <DropdownSection
-            title="GitHub Activity"
-            options={activeWindowOptions}
-            filterKey="activeWindow"
-            placeholder="Any Activity"
-          />
+            <DropdownSection
+              title="GitHub Activity"
+              options={activeWindowOptions}
+              filterKey="activeWindow"
+              placeholder="Any Activity"
+            />
 
-          <DropdownSection
-            title="Primary Goal"
-            options={primaryGoals}
-            filterKey="primaryGoal"
-            isMultiSelect={true}
-            placeholder="Any Goal"
-          />
-
-       
-     
+            <DropdownSection
+              title="Primary Goal"
+              options={primaryGoals}
+              filterKey="primaryGoal"
+              isMultiSelect={true}
+              placeholder="Any Goal"
+            />
+          </div>
         </div>
 
-   
-        <div className="p-4 border-t border-gray-700 mt-auto">
+        <div className="p-4 border-t border-gray-700/50 mt-auto">
           <div className="space-y-2">
             <button
               onClick={handleApply}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2 text-sm"
             >
               <Filter className="w-4 h-4" />
               Apply Filters
             </button>
             <button
               onClick={handleClear}
-              className="w-full bg-transparent border border-gray-600 text-gray-300 hover:text-white hover:bg-gray-700 px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-transparent border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-800/50 px-4 py-2 rounded-md transition-colors flex items-center justify-center gap-2 text-sm"
             >
               <X className="w-4 h-4" />
               Clear All
@@ -257,9 +253,8 @@ const FilterModal = ({ filters, onApply, onClose }) => {
         </div>
       </div>
 
-    
       <div 
-        className="flex-1 bg-black bg-opacity-20"
+        className="flex-1"
         onClick={onClose}
       />
     </div>
