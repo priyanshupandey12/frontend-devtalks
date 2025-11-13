@@ -170,7 +170,7 @@ const Request = () => {
                         ) : (
                           <>
                             <GraduationCap className="w-4 h-4" />
-                            <span>{user.educationYear} • {user.userRole}</span>
+                            <span>{user?.educationYear} • {user?.userRole}</span>
                           </>
                         )}
                       </div>
