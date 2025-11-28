@@ -1,25 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, useInView } from 'framer-motion';
-import { Github, MessageCircle, Users, Video, Search, Code, Globe, Target, Play, X, ArrowRight, User, Zap, Link, Users2, BookOpen, GraduationCap, PenTool, FolderOpen, TrendingUp, Brain, Share2, Calendar, Handshake } from 'lucide-react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { Github, MessageCircle, Users, Video, Search, Code, Globe, Target, Play, X, ArrowRight, User, Zap, Link, Users2, BookOpen, GraduationCap, PenTool, FolderOpen, TrendingUp, Brain, Share2, Calendar, Handshake, ChevronRight } from 'lucide-react';
+
+
 
 const LoginButton = ({ className, onClick }) => (
   <button
     onClick={onClick}
-    className={`relative px-6 py-3 text-white bg-gray-600 rounded-xl font-medium text-lg overflow-hidden border border-gray-600 hover:border-gray-500 transition-all duration-300 hover:bg-gray-700 shadow-lg hover:shadow-gray-500/20 ${className}`}
+    className={`group relative px-6 py-2.5 bg-white text-black rounded-full font-semibold text-sm transition-all duration-300 hover:bg-zinc-200 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.3)] ${className}`}
   >
-    <span className="relative z-10">Get Started</span>
+    <span className="relative z-10 flex items-center gap-2">
+      Get Started
+    </span>
   </button>
 );
 
 const DemoButton = ({ className, onClick }) => (
   <button
     onClick={onClick}
-    className={`relative px-6 py-3 text-white bg-transparent rounded-xl font-medium text-lg border border-gray-600 hover:border-gray-500 transition-all duration-300 hover:bg-gray-800/50 ${className}`}
+    className={`group flex items-center justify-center px-6 py-2.5 text-zinc-300 bg-white/5 backdrop-blur-sm rounded-full font-medium text-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10 hover:text-white ${className}`}
   >
-    <span className="relative z-10 flex items-center gap-2">
-      <Play className="w-4 h-4" />
-      Watch Demo
+    <span className="flex items-center gap-2">
+      <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors shrink-0">
+        <Play className="w-3 h-3 fill-current ml-0.5" />
+      </div>
+      <span className="leading-none">Watch Demo</span>
     </span>
   </button>
 );
@@ -27,20 +33,28 @@ const DemoButton = ({ className, onClick }) => (
 const NavLink = ({ id, children, onClick, isActive }) => (
   <button
     onClick={onClick}
-    className={`relative px-3 py-2 text-sm font-medium transition-all duration-300 ${
-      isActive 
-        ? 'text-white' 
-        : 'text-gray-400 hover:text-white'
+    className={`relative px-4 py-2 text-sm font-medium transition-colors duration-300 ${
+      isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
     }`}
   >
     {children}
-    <motion.span
-      className="absolute bottom-0 left-0 w-full h-0.5 bg-white rounded-full"
-      initial={{ scaleX: 0 }}
-      animate={{ scaleX: isActive ? 1 : 0 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-    />
+    {isActive && (
+      <motion.div
+        layoutId="activeNav"
+        className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent"
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      />
+    )}
   </button>
+);
+
+
+const GridBackground = () => (
+  <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+    <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-purple-500 opacity-20 blur-[100px]"></div>
+    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/80 to-black"></div>
+  </div>
 );
 
 const FindSimranLanding = () => {
@@ -48,6 +62,26 @@ const FindSimranLanding = () => {
   const [activeSection, setActiveSection] = useState('hero');
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  const heroRef = useRef(null);
+  const featuresRef = useRef(null);
+  const stepsRef = useRef(null);
+  const ctaRef = useRef(null);
+
+  // 1. Scroll Beam Logic (Now using stepsRef)
+  const { scrollYProgress } = useScroll({
+    target: stepsRef,
+    offset: ["start center", "end center"]
+  });
+  
+  const height = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+
+  const isHeroInView = useInView(heroRef, { once: true, amount: 0.3 });
+  const isFeaturesInView = useInView(featuresRef, { once: true, amount: 0.3 });
+  const isStepsInView = useInView(stepsRef, { once: true, amount: 0.3 });
+  const isCtaInView = useInView(ctaRef, { once: true, amount: 0.3 });
 
   const handleVideoClick = () => {
     setIsModalOpen(true);
@@ -57,23 +91,12 @@ const FindSimranLanding = () => {
     setIsModalOpen(false);
   };
 
-
-  const heroRef = useRef(null);
-  const featuresRef = useRef(null);
-  const stepsRef = useRef(null);
-  const ctaRef = useRef(null);
-
-  const isHeroInView = useInView(heroRef, { once: true, amount: 0.3 });
-  const isFeaturesInView = useInView(featuresRef, { once: true, amount: 0.3 });
-  const isStepsInView = useInView(stepsRef, { once: true, amount: 0.3 });
-  const isCtaInView = useInView(ctaRef, { once: true, amount: 0.3 });
-
   useEffect(() => {
     const handleScroll = () => {
       const sections = [
         { ref: heroRef, id: 'hero' },
         { ref: featuresRef, id: 'features' },
-        { ref: stepsRef, id: 'howitworks' },
+        { ref: stepsRef, id: 'howitworks' }, 
         { ref: ctaRef, id: 'cta' },
       ];
 
@@ -93,19 +116,9 @@ const FindSimranLanding = () => {
   }, []);
 
   const scrollToSection = (ref) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setMobileMenuOpen(false);
-  };
-
-  const mobileMenuVariants = {
-    hidden: { x: '100%', opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        x: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.2 }
-      }
+    if(ref && ref.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setMobileMenuOpen(false);
     }
   };
 
@@ -113,95 +126,72 @@ const FindSimranLanding = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
+    hidden: { y: 20, opacity: 0, filter: "blur(10px)" },
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.8, ease: 'easeOut' }
-    }
-  };
-
-  const stepVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
+      filter: "blur(0px)",
       transition: { duration: 0.6, ease: 'easeOut' }
     }
   };
 
-  const arrowVariants = {
-    hidden: { scaleX: 0 },
-    visible: {
-      scaleX: 1,
-      transition: { duration: 0.8, ease: 'easeOut' }
-    },
-    hover: {
-      scale: 1.2,
-      x: 5,
-      transition: { duration: 0.3, ease: 'easeInOut' }
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden font-inter">
-      <nav className="relative z-10 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-800">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-xl flex items-center justify-center border border-gray-600">
-              <Code className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+    <div className="min-h-screen bg-black text-zinc-100 relative overflow-hidden font-inter selection:bg-white/20">
+      <GridBackground />
+      
+
+      <nav className="fixed top-0 w-full z-40 border-b border-white/5 bg-black/50 backdrop-blur-xl supports-[backdrop-filter]:bg-black/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-zinc-100 to-zinc-500 rounded-lg flex items-center justify-center shadow-lg shadow-white/10">
+                <Code className="w-4 h-4 text-black" />
+              </div>
+              <span className="text-lg font-bold tracking-tight">DevTalks</span>
             </div>
-            <span className="text-xl sm:text-2xl font-bold text-white">DevTalks</span>
-          </div>
 
-          <div className="hidden sm:flex items-center space-x-6">
-            <NavLink id="features" isActive={activeSection === 'features'} onClick={() => scrollToSection(featuresRef)}>
-              Features
-            </NavLink>
-            <NavLink id="howitworks" isActive={activeSection === 'howitworks'} onClick={() => scrollToSection(stepsRef)}>
-              How it Works
-            </NavLink>
-            <LoginButton onClick={() => navigate('/login')} />
-          </div>
+            <div className="hidden md:flex items-center space-x-1 bg-white/5 rounded-full px-2 py-1 border border-white/5">
+              <NavLink id="features" isActive={activeSection === 'features'} onClick={() => scrollToSection(featuresRef)}>
+                Features
+              </NavLink>
+              <NavLink id="howitworks" isActive={activeSection === 'howitworks'} onClick={() => scrollToSection(stepsRef)}>
+                How it Works
+              </NavLink>
+            </div>
 
-          <button
-            className="sm:hidden p-2 text-white hover:text-gray-300 transition-colors duration-200"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle mobile menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+            <div className="hidden md:block">
+               <LoginButton onClick={() => navigate('/login')} />
+            </div>
+
+            <button
+              className="md:hidden p-2 text-zinc-400 hover:text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <div className="space-y-1.5">
+                <span className={`block w-6 h-0.5 bg-current transition-transform ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+                <span className={`block w-6 h-0.5 bg-current transition-opacity ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-6 h-0.5 bg-current transition-transform ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+              </div>
+            </button>
+          </div>
         </div>
 
+        {/* Mobile Menu */}
         <motion.div
-          variants={mobileMenuVariants}
-          initial="hidden"
-          animate={mobileMenuOpen ? "visible" : "hidden"}
-          className="fixed top-0 right-0 h-full w-64 bg-black/95 backdrop-blur-lg p-6 z-30 flex flex-col border-l border-gray-800 space-y-4"
+          initial={false}
+          animate={mobileMenuOpen ? { height: 'auto', opacity: 1 } : { height: 0, opacity: 0 }}
+          className="md:hidden overflow-hidden bg-black border-b border-white/10"
         >
-          <NavLink id="features" isActive={activeSection === 'features'} onClick={() => scrollToSection(featuresRef)}>
-            Features
-          </NavLink>
-          <NavLink id="howitworks" isActive={activeSection === 'howitworks'} onClick={() => scrollToSection(stepsRef)}>
-            How it Works
-          </NavLink>
-          <LoginButton
-            onClick={() => {
-              navigate('/login');
-              setMobileMenuOpen(false);
-            }}
-            className="w-full"
-          />
+          <div className="px-4 py-6 space-y-4 flex flex-col items-center">
+            <button onClick={() => scrollToSection(featuresRef)} className="text-zinc-400 hover:text-white">Features</button>
+            <button onClick={() => scrollToSection(stepsRef)} className="text-zinc-400 hover:text-white">How it Works</button>
+            <LoginButton onClick={() => navigate('/login')} className="w-full" />
+          </div>
         </motion.div>
       </nav>
 
@@ -211,340 +201,220 @@ const FindSimranLanding = () => {
         initial="hidden"
         animate={isHeroInView ? "visible" : "hidden"}
         variants={containerVariants}
-        className="relative z-10 px-4 sm:px-6 py-20 sm:py-32"
+        className="relative z-10 pt-32 pb-20 px-4 sm:px-6 min-h-[80vh] flex flex-col justify-center items-center"
       >
-        <div className="max-w-4xl mx-auto text-center relative overflow-hidden">
-          <motion.div 
-            variants={itemVariants}
-            className="relative z-10"
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Badge */}
+           <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">The network for builders</span>
+          </motion.div>
+
+          <motion.h1 
+            variants={itemVariants} 
+            className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter mb-6 text-white leading-[1.1]"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white relative">
-              <span className="text-red-500 font-extrabold animate-pulse">
-                Tired
-              </span>
-              {' '}of{' '}
-              <span className="text-gray-500">
-                random
-              </span>
-              {' '}
-              <span className="text-white ">
-                DMs
-              </span>
-              {' '}and{' '}
-              <span className="text-gray-600 font-extrabold">
-                dead
-              </span>
-              {' '}communities?
-              <motion.div
-                className="absolute -top-4 -right-4 w-32 h-32 bg-gradient-to-br from-emerald-200/20 to-white/10 rounded-full blur-3xl"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 0.3, scale: 1 }}
-                transition={{ duration: 2, delay: 0.5 }}
-                style={{ originX: 1, originY: 0 }}
-              />
-              <motion.div
-                className="absolute -top-4 -left-4 w-24 h-24 bg-gradient-to-br from-blue-200/20 to-white/10 rounded-full blur-2xl"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 0.2, scale: 1 }}
-                transition={{ duration: 2, delay: 0.7 }}
-                style={{ originX: 0, originY: 0 }}
-              />
-            </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="text-gray-300">
-                DevTalks helps you link up with{' '}
-              </span>
-              <span className="text-emerald-400 font-semibold">
-                people who actually code, build,
-              </span>
-              <span className="text-gray-300">
-                {' '}and wanna{' '}
-              </span>
-              <span className="text-purple-400 font-semibold animate-pulse">
-                collaborate
-              </span>
-              <span className="text-gray-300">.</span>
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <LoginButton onClick={() => navigate('/login')} 
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.2 }}
-              />
-              <DemoButton onClick={handleVideoClick} />
-            </div>
+            Tired of random DMs
+            <br className="hidden md:block" />
+            and <span className="text-zinc-600">dead</span> communities?
+          </motion.h1>
+
+          <motion.p variants={itemVariants} className="text-base sm:text-lg text-zinc-400 mb-8 max-w-xl mx-auto leading-relaxed">
+            DevTalks links you with <span className="text-zinc-100 font-semibold">real builders</span> who want to <span className="text-zinc-100 font-semibold">collaborate</span>, not just chat.
+          </motion.p>
+
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <LoginButton onClick={() => navigate('/login')} className="h-10 px-6 text-sm" />
+            <DemoButton onClick={handleVideoClick} className="h-10 px-6 text-sm" />
           </motion.div>
         </div>
       </motion.section>
 
+      {/* Video Modal */}
       {isModalOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+          animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
           onClick={closeModal}
         >
-          <div
-            className="relative w-full max-w-4xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="absolute -top-10 -right-2 sm:top-0 sm:-right-12 text-white/70 hover:text-white transition-colors z-10"
-              onClick={closeModal}
-              aria-label="Close video player"
-            >
-              <X className="w-8 h-8" />
+          <div className="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden border border-white/10 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button onClick={closeModal} className="absolute top-4 right-4 p-2 bg-black/50 text-white hover:bg-white hover:text-black rounded-full transition-all z-10">
+              <X className="w-5 h-5" />
             </button>
-            <video
-              className="w-full h-auto rounded-xl shadow-2xl"
-              src="/devtalks.mp4"
-              controls
-              autoPlay
-            />
+            <video className="w-full h-full object-cover" src="/devtalks.mp4" controls autoPlay />
           </div>
         </motion.div>
       )}
 
       {/* Features Section */}
-      <section ref={featuresRef} className="relative z-10 px-4 sm:px-6 py-20 sm:py-32 bg-black border-y border-gray-800">
+      <section ref={featuresRef} className="relative z-10 py-24 sm:py-32 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial="hidden"
             animate={isFeaturesInView ? "visible" : "hidden"}
             variants={containerVariants}
-            className="text-center mb-16"
+            className="mb-16 md:mb-24"
           >
-            <motion.h2 variants={itemVariants} className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Features That Fuel Collaboration
+            <motion.h2 variants={itemVariants} className="text-3xl sm:text-5xl font-bold tracking-tight mb-4">
+              Features That Fuel <span className="text-zinc-500">Collaboration</span>
             </motion.h2>
-            <motion.p variants={itemVariants} className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
-              From smart matching to seamless teamwork, everything built for developers who ship together.
-            </motion.p>
+      
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            animate={isFeaturesInView ? "visible" : "hidden"}
-            variants={containerVariants}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8"
-          >
-            <motion.div variants={itemVariants} className="bg-gray-900/50 rounded-xl p-6 border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300">
-              <h3 className="text-xl font-bold text-purple-300 mb-2">Real-Time Chat</h3>
-              <p className="text-gray-300 mb-4">Instant messaging and voice rooms to brainstorm, debug, and iterate without friction.</p>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="bg-gray-900/50 rounded-xl p-6 border border-orange-500/30 hover:border-orange-400/50 transition-all duration-300">
-              <h3 className="text-xl font-bold text-orange-300 mb-2">Idea Marketplace</h3>
-              <p className="text-gray-300 mb-4">Post your project ideas or join open calls to team up on game-changing builds.</p>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            animate={isFeaturesInView ? "visible" : "hidden"}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.1,
-                  delayChildren: 0.3
-                }
-              }
-            }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-          >
-            {/* Row 2 */}
-            <motion.div variants={itemVariants} className="bg-gray-900/50 rounded-xl p-6 border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300">
-              <h3 className="text-xl font-bold text-blue-300 mb-2">Profile Showcase</h3>
-              <p className="text-gray-300 mb-4">Build a dynamic profile with your GitHub, past projects, and collaboration history.</p>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="bg-gray-900/50 rounded-xl p-6 border border-orange-500/30 hover:border-orange-400/50 transition-all duration-300">
-              <h3 className="text-xl font-bold text-orange-300 mb-2">Skill Filters</h3>
-              <p className="text-gray-300 mb-4">Advanced search by tech stack, experience level, location, and availability.</p>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="bg-gray-900/50 rounded-xl p-6 border border-blue-500/30 hover:border-blue-400/50 transition-all duration-300">
-              <h3 className="text-xl font-bold text-blue-300 mb-2">Community Hubs</h3>
-              <p className="text-gray-300 mb-4">Join topic-based groups for frontend, backend, AI, and more to network organically.</p>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="bg-gray-900/50 rounded-xl p-6 border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300">
-              <h3 className="text-xl font-bold text-purple-300 mb-2">Mentor Matches</h3>
-              <p className="text-gray-300 mb-4">Pair with experienced devs for guidance on your next big project or career move.</p>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial="hidden"
-            animate={isFeaturesInView ? "visible" : "hidden"}
-            variants={containerVariants}
-            className="grid grid-cols-1 sm:grid-cols-1 gap-6"
-          >
-            {/* Row 3 */}
-            <motion.div variants={itemVariants} className="bg-gray-900/50 rounded-xl p-6 border border-pink-500/30 hover:border-pink-400/50 transition-all duration-300">
-              <h3 className="text-xl font-bold text-pink-300 mb-2">GitHub Sync</h3>
-              <p className="text-gray-300 mb-4">Auto-pull your repos and activity to showcase real contributions to potential partners.</p>
-            </motion.div>
-          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { title: "Real-Time Chat", desc: "Instant messaging and voice rooms to brainstorm without friction.", color: "text-purple-400", border: "hover:shadow-purple-500/10" },
+              { title: "Idea Marketplace", desc: "Post your project ideas or join open calls to team up on builds.", color: "text-orange-400", border: "hover:shadow-orange-500/10" },
+              { title: "Profile Showcase", desc: "Dynamic profile with your GitHub, past projects, and history.", color: "text-blue-400", border: "hover:shadow-blue-500/10" },
+              { title: "Skill Filters", desc: "Advanced search by tech stack, experience level, and availability.", color: "text-emerald-400", border: "hover:shadow-emerald-500/10" },
+              { title: "Community Hubs", desc: "Topic-based groups for AI, Web3, and more to network organically.", color: "text-pink-400", border: "hover:shadow-pink-500/10" },
+              { title: "GitHub Sync", desc: "Auto-pull your repos to showcase real contributions.", color: "text-white", border: "hover:shadow-white/10" }
+            ].map((feature, idx) => (
+              <motion.div
+                key={idx}
+                variants={itemVariants}
+                className={`group p-8 rounded-3xl bg-zinc-900/30 border border-white/5 hover:border-white/10 transition-all duration-300 hover:-translate-y-1 ${feature.border}`}
+              >
+                <div className={`mb-4 text-sm font-mono opacity-80 ${feature.color}`}>0{idx + 1}</div>
+                <h3 className={`text-xl font-bold mb-3 text-zinc-100`}>{feature.title}</h3>
+                <p className="text-zinc-400 leading-relaxed text-sm">{feature.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Steps Section */}
-      <section ref={stepsRef} className="relative z-10 px-4 sm:px-6 py-20 sm:py-32 bg-black">
-        <div className="max-w-6xl mx-auto">
+      {/* Steps Section - Vertical Scroll Beam */}
+      <section ref={stepsRef} className="relative z-10 py-32 bg-black border-y border-white/5">
+        <div className="max-w-3xl mx-auto px-6">
+          
           <motion.div
-            initial="hidden"
-            animate={isStepsInView ? "visible" : "hidden"}
-            variants={containerVariants}
-            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-24"
           >
-            <motion.h2 variants={itemVariants} className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4 text-white">
               How It Works
-            </motion.h2>
-            <motion.p variants={itemVariants} className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto">
-              Get from idea to execution in just a few steps.
-            </motion.p>
+            </h2>
+            <p className="text-zinc-400">
+              Your path to collaboration.
+            </p>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            animate={isStepsInView ? "visible" : "hidden"}
-            variants={{
-              visible: {
-                transition: {
-                  staggerChildren: 0.2,
-                  delayChildren: 0.3
-                }
-              }
-            }}
-            className="space-y-8 sm:space-y-0"
-          >
-            {[
-              { icon: User, title: 'Sign Up & Profile', desc: 'Create your profile with skills and project ideas.' },
-              { icon: Search, title: 'Find Matches', desc: 'Search or get suggested partners instantly.' },
-              { icon: MessageCircle, title: 'Connect & Chat', desc: 'Message and plan your collaboration.' },
-              { icon: Code, title: 'Build Together', desc: 'Share repos, track progress, and ship your project.' }
-            ].map((step, index) => (
+          <div className="relative">
+   
+            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-zinc-800/50">
+              
+      
               <motion.div
-                key={index}
-                variants={stepVariants}
-                className="flex items-center justify-between py-4 sm:py-6 relative group"
-                whileHover={{ 
-                  x: 10, 
-                  scale: 1.02,
-                  transition: { duration: 0.3 }
-                }}
-                whileTap={{ scale: 0.98 }}
+                style={{ height }}
+                className="absolute top-0 left-0 w-full bg-gradient-to-b from-transparent via-white to-transparent shadow-[0_0_15px_rgba(255,255,255,0.8)]"
               >
-                <div className="flex items-center space-x-4 flex-1">
-                  <motion.div 
-                    className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-600 flex-shrink-0 relative overflow-hidden"
-                    whileHover={{ 
-                      scale: 1.1, 
-                      borderColor: '#3b82f6',
-                      backgroundColor: '#3b82f6/10',
-                      transition: { duration: 0.3 }
-                    }}
-                  >
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-transparent rounded-full"
-                      initial={{ scaleX: 0 }}
-                      whileHover={{ scaleX: 1 }}
-                      transition={{ duration: 0.5 }}
-                    />
-                    <step.icon className="w-6 h-6 text-white relative z-10" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-1">Step {index + 1}: {step.title}</h3>
-                    <p className="text-gray-400 text-sm">{step.desc}</p>
-                  </div>
-                </div>
-                {index < 3 && (
-                  <>
-                    <motion.div
-                      variants={arrowVariants}
-                      initial="hidden"
-                      animate={isStepsInView ? "visible" : "hidden"}
-                      whileHover="hover"
-                      className="hidden sm:block w-16 flex-shrink-0 ml-4"
-                    >
-                      <motion.div
-                        className="w-full h-1 bg-gradient-to-r from-gray-600 to-transparent rounded-full"
-                        initial={{ scaleX: 0 }}
-                        whileHover={{ scaleX: 1 }}
-                        transition={{ duration: 0.5 }}
-                      />
-                      <ArrowRight className="w-8 h-8 text-gray-600 mx-auto transform rotate-90 mt-2" />
-                    </motion.div>
-                    <motion.div
-                      variants={arrowVariants}
-                      initial="hidden"
-                      animate={isStepsInView ? "visible" : "hidden"}
-                      whileHover="hover"
-                      className="sm:hidden absolute right-0 top-1/2 transform -translate-y-1/2"
-                      style={{ originX: 0 }}
-                    >
-                      <ArrowRight className="w-6 h-6 text-gray-600" />
-                    </motion.div>
-                  </>
-                )}
+               
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-white rounded-full shadow-[0_0_20px_2px_rgba(255,255,255,1)]" />
               </motion.div>
-            ))}
-          </motion.div>
+            </div>
+
+            <div className="space-y-24">
+              {[
+                { icon: User, title: 'Sign Up', desc: 'Create your profile with your tech stack and interests.' },
+                { icon: Search, title: 'Find Matches', desc: 'Our algorithm finds developers with complementary skills.' },
+                { icon: MessageCircle, title: 'Connect', desc: 'Start a chat or jump into a voice room to sync up.' },
+                { icon: Code, title: 'Build', desc: 'Share repositories and start shipping code together.' }
+              ].map((step, index) => (
+                <div key={index} className="relative pl-24 group">
+                  
+                
+                  <div className="absolute left-0 top-0 w-16 h-16 bg-black border border-zinc-800 rounded-full flex items-center justify-center z-10 group-hover:border-zinc-600 transition-colors duration-500">
+                    <div className="absolute inset-0 bg-zinc-900 rounded-full -z-10" />
+                    <step.icon className="w-6 h-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
+                  </div>
+
+             
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
+                    <span className="text-xs font-mono text-zinc-500 mb-2 block">Step 0{index + 1}</span>
+                    <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
+                    <p className="text-zinc-400 leading-relaxed max-w-md">
+                      {step.desc}
+                    </p>
+                  </motion.div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section ref={ctaRef} className="relative z-10 px-4 sm:px-6 py-20 sm:py-32 text-center bg-black border-t border-gray-800">
-        <div className="max-w-4xl mx-auto">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            animate={isCtaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4"
+      <section ref={ctaRef} className="relative z-10 py-32 border-t border-white/5 bg-black overflow-hidden">
+     
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+        
+          <div className="absolute inset-0 bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+        </div>
+
+        <div className="max-w-3xl mx-auto px-6 relative z-10 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={isCtaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.5 }}
           >
-            Ready to find devs who match your energy?
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={isCtaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ delay: 0.2 }}
-            className="text-lg sm:text-xl text-gray-300 mb-8 max-w-2xl mx-auto"
-          >
-            Join DevTalks <span className="text-gray-400">→</span> Start Connecting
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={isCtaInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ delay: 0.4 }}
-          >
-            <LoginButton onClick={() => navigate('/login')} className="mx-auto" />
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
+              Stop searching. Start building.
+            </h2>
+            <p className="text-zinc-500 text-lg mb-8 max-w-xl mx-auto">
+              The code connects us. The community keeps us going.
+              <br />
+              Find your circle today.
+            </p>
+            
+            <div className="flex justify-center">
+              <LoginButton 
+                onClick={() => navigate('/login')} 
+                className="h-12 px-8 text-base shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]" 
+              />
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 px-4 sm:px-6 py-8 sm:py-12 bg-black border-t border-gray-800">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <div className="w-6 h-6 bg-gray-800 rounded flex items-center justify-center">
-              <Code className="w-3 h-3 text-white" />
+      <footer className="relative z-10 py-8 bg-black border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          
+          {/* Left: Brand & Copy */}
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-zinc-800 rounded flex items-center justify-center border border-white/10">
+                <Code className="w-3 h-3 text-zinc-300" />
+              </div>
+              <span className="text-zinc-200 font-semibold text-sm tracking-tight">DevTalks</span>
             </div>
-            <span className="text-white font-medium">DevTalks</span>
+            <span className="hidden md:block w-px h-4 bg-zinc-800"></span>
+            <p className="text-zinc-600 text-xs font-mono">
+              &copy; 2025 Inc. All rights reserved.
+            </p>
           </div>
-          <p className="text-gray-500 text-sm">&copy; 2025 DevTalks. Built for builders.</p>
+
+     
         </div>
       </footer>
 
       <style jsx>{`
-        @font-face {
-          font-family: 'Inter';
-          font-weight: 400 700;
-          src: url('/fonts/Inter-Variable.woff2') format('woff2');
-        }
-        .font-inter {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        .font-inter { font-family: 'Inter', sans-serif; }
       `}</style>
     </div>
   );
